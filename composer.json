@@ -1,0 +1,29 @@
+{
+  "name": "fortidigitalstudio/efod-neve-plugin",
+  "type": "wordpress-plugins",
+  "description": "This is efod wordpress theme framework to enrich theme functions",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Singgih Mardianto",
+      "email": "singgihmardianto@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+    "wptrt/wpthemereview": "^0.2.1",
+    "php-parallel-lint/php-parallel-lint": "^1.2.0",
+    "wp-cli/i18n-command": "^2.2.5",
+    "wp-coding-standards/wpcs": "^2.3",
+    "phpcompatibility/php-compatibility": "^9.3"
+  },
+  "scripts": {
+    "lint:wpcs": "@php ./vendor/bin/phpcs --runtime-set testVersion 5.6-",
+    "lint:fix": "./vendor/bin/phpcbf",
+    "lint:php": "@php ./vendor/bin/parallel-lint --exclude .git --exclude vendor .",
+    "make-pot": "wp i18n make-pot . languages/_s.pot"
+  }
+}

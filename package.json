@@ -1,0 +1,34 @@
+{
+	"name": "efod-framework",
+	"version": "0.0.1",
+	"description": "Efod framework is a package to improve Efod theme functionality",
+	"main": "index.js",
+	"scripts": {
+		"lint:js": "wp-scripts lint-js 'js/*.js' --fix",
+		"build:main": "wp-scripts build 'assets/js/index.js' --output-path=public/js && node-sass assets/styles/admin.scss public/css/admin.css",
+		"release:major": "standard-version --release-as major",
+		"release:minor": "standard-version --release-as minor",
+		"release:patch": "standard-version --release-as patch",
+		"deploy": "commands/deploy.sh",
+		"commit": "cz"
+	},
+	"keywords": [
+		"\"Wordpress\"",
+		"\"Theme\"",
+		"\"Plugin\""
+	],
+	"author": "FORTI Digital Studio",
+	"license": "GPL-2.0-or-later",
+	"devDependencies": {
+		"@wordpress/scripts": "^25.2.0",
+		"node-sass": "^7.0.3",
+		"commitizen": "^4.2.4",
+		"cz-conventional-changelog": "^3.3.0",
+		"standard-version": "^9.3.2"
+	},
+	"config": {
+		"commitizen": {
+			"path": "./node_modules/cz-conventional-changelog"
+		}
+	}
+}

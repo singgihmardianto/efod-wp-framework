@@ -1,0 +1,17 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+.ef-cpt-meta-img-galleries__list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: 5px; }
+  .ef-cpt-meta-img-galleries__list li {
+    margin-bottom: 0; }
+  .ef-cpt-meta-img-galleries__list span {
+    display: inline-block;
+    width: 75px;
+    height: 75px;
+    background-size: cover;
+    background-position: top center; }
