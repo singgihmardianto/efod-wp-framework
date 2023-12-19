@@ -84,10 +84,10 @@ class Efod_Framework {
 			'efod-framework-js',
 			plugin_dir_url( __FILE__ ) . '../public/js/index.js',
 			array(),
-			EFOD_VERSION,
+			EFOD_FRAMEWORK_VERSION,
 			true
 		);
-		wp_enqueue_style( 'efod-framework-css', plugin_dir_url( __FILE__ ) . '../public/css/admin.css', array(), EFOD_VERSION );
+		wp_enqueue_style( 'efod-framework-css', plugin_dir_url( __FILE__ ) . '../public/css/admin.css', array(), EFOD_FRAMEWORK_VERSION );
 		wp_enqueue_script( 'efod-framework-js' );
 	}
 }

@@ -4,8 +4,8 @@
 	"description": "Efod framework is a package to improve Efod theme functionality",
 	"main": "index.js",
 	"scripts": {
-		"lint:js": "wp-scripts lint-js 'js/*.js' --fix",
-		"build:main": "wp-scripts build 'assets/js/index.js' --output-path=public/js && node-sass assets/styles/admin.scss public/css/admin.css",
+		"lint:js": "wp-scripts lint-js 'assets/js/*.js' --fix",
+		"build": "wp-scripts build 'assets/js/index.js' --output-path=public/js && node-sass assets/styles/admin.scss public/css/admin.css",
 		"release:major": "standard-version --release-as major",
 		"release:minor": "standard-version --release-as minor",
 		"release:patch": "standard-version --release-as patch",

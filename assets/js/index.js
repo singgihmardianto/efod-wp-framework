@@ -1,8 +1,8 @@
 /** global jQuery, wp */
-import cptInputHandler from "./cpt-input-handler.js";
+import cptInputHandler from './cpt-input-handler.js';
 
-(function ($, wp) {
-	"use strict";
+( function ( $, wp ) {
+	'use strict';
 
 	/**
 	 * All of the code for your admin-facing JavaScript source
@@ -31,6 +31,6 @@ import cptInputHandler from "./cpt-input-handler.js";
 	 * Although scripts in the WordPress core, Plugins and Themes may be
 	 * practising this, we should strive to set a better example in our own work.
 	 */
-	let myCptInputHandler = cptInputHandler($, wp);
+	const myCptInputHandler = cptInputHandler( $, wp );
 	myCptInputHandler.run();
-})(jQuery, wp);
+})(jQuery, wp); //eslint-disable-line

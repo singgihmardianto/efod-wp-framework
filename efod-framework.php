@@ -15,7 +15,7 @@
  * Plugin Name:       Efod Framework
  * Plugin URI:        https://fortidigitalstudio.com
  * Description:       This is a efod theme framework to enrich the theme.
- * Version:           1.0.0
+ * Version:           0.0.1
  * Author:            FORTI Digital Studio
  * Author URI:        https://fortidigitalstudio.com
  * License:           GPL-2.0+
