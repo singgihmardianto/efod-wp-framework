@@ -28,6 +28,18 @@ const cptInputHandler = ( $, wp ) => {
 		imageGalleriesAddBtn.click( ( e ) => {
 			e.preventDefault();
 
+			const isSingleImage =
+				$( e.target ).attr( 'data-attr-is-single' ) === 'true'
+					? true
+					: false;
+
+			const list = $( e.target ).siblings(
+				'.ef-cpt-meta-img-galleries__list'
+			);
+			const inputHidden = $( e.target ).siblings(
+				'.ef-cpt-meta-img-galleries__input_hidden'
+			);
+
 			const customUploader = wp.media( {
 				title: 'Insert images',
 				library: {
@@ -36,7 +48,7 @@ const cptInputHandler = ( $, wp ) => {
 				button: {
 					text: 'Use these images',
 				},
-				multiple: true,
+				multiple: ! isSingleImage,
 			} );
 
 			customUploader.on( 'select', function () {
@@ -50,9 +62,9 @@ const cptInputHandler = ( $, wp ) => {
 					} );
 				// reset results
 				imageGalleriesInputValue = [];
-				$( '.ef-cpt-meta-img-galleries__list' ).html( '' );
+				list.html( '' );
 				selectedImages.forEach( ( image ) => {
-					$( '.ef-cpt-meta-img-galleries__list' ).append(
+					list.append(
 						'<li data-id="' +
 							image.id +
 							'"><span style="background-image:url(' +
@@ -63,11 +75,9 @@ const cptInputHandler = ( $, wp ) => {
 					imageGalleriesInputValue.push( image.id );
 				} );
 				// refresh sortable
-				$( '.ef-cpt-meta-img-galleries__list' ).sortable( 'refresh' );
+				list.sortable( 'refresh' );
 				// add the IDs to the hidden field value
-				$( '.ef-cpt-meta-img-galleries__input_hidden' ).val(
-					imageGalleriesInputValue.join()
-				);
+				inputHidden.val( imageGalleriesInputValue.join() );
 			} );
 
 			customUploader.on( 'open', function () {

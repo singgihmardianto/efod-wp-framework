@@ -24,39 +24,6 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 		 */
 		public function init() {
 			register_post_type(
-				'portfolio',
-				array(
-					'labels'               => array(
-						'name'          => __( 'Portfolios', 'efod-framework' ),
-						'singular_name' => __( 'Portfolio', 'efod-framework' ),
-						'add_new_item'  => __( 'Add New Portfolio', 'efod-framework' ),
-					),
-					'supports'             => array( 'title', 'editor', 'thumbnail' ),
-					'public'               => true,
-					'has_archive'          => true,
-					'menu_position'        => 21, // Below pages.
-					'rewrite'              => array( 'slug' => 'portfolios' ),
-					'taxonomies'           => array( 'portfolio_category' ),
-					'register_meta_box_cb' => array( $this, 'efod_portfolio_metabox' ),
-				)
-			);
-
-			register_taxonomy(
-				'portfolio_category',
-				'portfolio',
-				array(
-					'label'             => __( 'Category', 'efod-framework' ),
-					'description'       => __( 'Category for your portfolio', 'efod-framework' ),
-					'hierarchical'      => true,
-					'show_ui'           => true,
-					'show_in_rest'      => true,
-					'show_admin_column' => true,
-					'query_var'         => true,
-					'rewrite'           => array( 'slug' => 'portfolio-category' ),
-				)
-			);
-
-			register_post_type(
 				'catalog',
 				array(
 					'labels'               => array(
@@ -65,6 +32,7 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 						'add_new_item'  => __( 'Add New Catalog', 'efod-framework' ),
 					),
 					'supports'             => array( 'title', 'editor', 'thumbnail' ),
+					'menu_icon'            => 'dashicons-category',
 					'public'               => true,
 					'has_archive'          => true,
 					'menu_position'        => 22, // below pages.
@@ -91,23 +59,59 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 			);
 
 			register_post_type(
-				'testimonial',
+				'portfolio',
+				array(
+					'labels'               => array(
+						'name'          => __( 'Portfolios', 'efod-framework' ),
+						'singular_name' => __( 'Portfolio', 'efod-framework' ),
+						'add_new_item'  => __( 'Add New Portfolio', 'efod-framework' ),
+					),
+					'supports'             => array( 'title', 'editor', 'thumbnail' ),
+					'public'               => true,
+					'menu_icon'            => 'dashicons-testimonial',
+					'has_archive'          => true,
+					'menu_position'        => 21, // Below pages.
+					'rewrite'              => array( 'slug' => 'portfolios' ),
+					'register_meta_box_cb' => array( $this, 'efod_portfolio_metabox' ),
+				)
+			);
+
+			register_post_type(
+				'job_vacancies',
 				array(
 					'labels'        => array(
-						'name'          => __( 'Testimonials', 'efod-framework' ),
-						'singular_name' => __( 'Testimonial', 'efod-framework' ),
-						'add_new_item'  => __( 'Add New Testimonial', 'efod-framework' ),
+						'name'          => __( 'Job Vacancies', 'efod-framework' ),
+						'singular_name' => __( 'Job Vacancy', 'efod-framework' ),
+						'add_new_item'  => __( 'Add New Vacancy', 'efod-framework' ),
 					),
 					'supports'      => array( 'title', 'editor', 'thumbnail' ),
 					'public'        => true,
+					'menu_icon'     => 'dashicons-groups',
 					'has_archive'   => true,
 					'menu_position' => 23, // below pages.
-					'rewrite'       => array( 'slug' => 'testimonials' ),
+					'taxonomies'    => array( 'job_category' ),
+					'rewrite'       => array( 'slug' => 'job-vacancies' ),
+				)
+			);
+
+			register_taxonomy(
+				'job_category',
+				'job_vacancies',
+				array(
+					'label'             => __( 'Category', 'efod-framework' ),
+					'description'       => __( 'Category for your job vacancy', 'efod-framework' ),
+					'hierarchical'      => true,
+					'show_ui'           => true,
+					'show_in_rest'      => true,
+					'show_admin_column' => true,
+					'query_var'         => true,
+					'public'            => true,
+					'rewrite'           => array( 'slug' => 'job-category' ),
 				)
 			);
 
 			add_action(
-				'save_post',
+				'save_post_catalog',
 				function( $post_id ) {
 					$this->efod_save_meta_box(
 						$post_id,
@@ -131,7 +135,7 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 			);
 
 			add_action(
-				'save_post',
+				'save_post_portfolio',
 				function( $post_id ) {
 					$this->efod_save_meta_box(
 						$post_id,
@@ -140,12 +144,16 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 								'efod_portfolio_project_period_nonce',
 								'efod_portfolio_project_link_nonce',
 								'efod_portfolio_img_galleries_nonce',
+								'efod_portfolio_one2many_catalog_nonce',
+								'efod_portfolio_client_icon_nonce',
 							),
 							'field' => array(
 								'efod_portfolio_project_period',
 								'efod_portfolio_project_link',
 								'efod_portfolio_project_link_type_checkbox',
 								'efod_portfolio_img_galleries',
+								'efod_portfolio_one2many_catalog',
+								'efod_portfolio_client_icon',
 							),
 						)
 					);
@@ -189,6 +197,15 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 		 */
 		public function efod_portfolio_metabox() {
 			add_meta_box(
+				'efod_portfolio_one2many_catalog',
+				__( 'Select Catalog', 'efod-framework' ),
+				array( $this, 'efod_portfolio_metabox_one2many_catalog_html' ),
+				'portfolio',
+				'side',
+				'low'
+			);
+
+			add_meta_box(
 				'efod_portfolio_project_period',
 				__( 'Project Period', 'efod-framework' ),
 				array( $this, 'efod_portfolio_metabox_project_period_html' ),
@@ -212,12 +229,21 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 				'side',
 				'low'
 			);
+
+			add_meta_box(
+				'efod_portfolio_client_icon',
+				__( 'Portfolio Client Icon', 'efod-framework' ),
+				array( $this, 'efod_portfolio_metabox_portfolio_client_icon_html' ),
+				'portfolio',
+				'side',
+				'low'
+			);
 		}
 
 		/**
 		 * Render catalog galleries html
 		 *
-		 * @param array $post the custom post.
+		 * @param Post $post the custom post.
 		 */
 		public function efod_catalog_metabox_catalog_galleries_html( $post ) {
 			// Add a nonce field so we can check for it later.
@@ -239,7 +265,7 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 		/**
 		 * Custom input catalog price
 		 *
-		 * @param array $post the custom post.
+		 * @param Post $post the custom post.
 		 */
 		public function efod_catalog_metabox_catalog_price_from_html( $post ) {
 			// Add a nonce field so we can check for it later.
@@ -262,7 +288,7 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 		/**
 		 * Custom input catalog contact form id
 		 *
-		 * @param array $post the custom post.
+		 * @param Post $post the custom post.
 		 */
 		public function efod_catalog_metabox_cta_url( $post ) {
 			// Add a nonce field so we can check for it later.
@@ -314,9 +340,56 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 		}
 
 		/**
+		 * Render one2many field with catalog
+		 *
+		 * @param Post $post the custom post.
+		 */
+		public function efod_portfolio_metabox_one2many_catalog_html( $post ) {
+			// Add a nonce field so we can check for it later.
+			wp_nonce_field( 'efod_portfolio_one2many_catalog_nonce', 'efod_portfolio_one2many_catalog_nonce' );
+			$value = get_post_meta( $post->ID, 'efod_portfolio_one2many_catalog', true );
+
+			// get options from catalog.
+			// Get all Portfolio items.
+			$catalog_args  = array(
+				'post_type'      => 'catalog',
+				'posts_per_page' => -1,
+			);
+			$catalog_query = new WP_Query( $catalog_args );
+
+			$catalogs = array();
+			if ( $catalog_query->have_posts() ) {
+				while ( $catalog_query->have_posts() ) {
+					$catalog_query->the_post();
+					$catalog_id = get_the_ID();
+					array_push(
+						$catalogs,
+						array(
+							'label' => get_the_title(),
+							'value' => $catalog_id,
+						)
+					);
+				}
+				wp_reset_postdata();
+			}
+
+			echo esc_html(
+				$this->create_input(
+					'select',
+					(object) array(
+						'name'        => 'efod_portfolio_one2many_catalog',
+						'id'          => 'efod_portfolio_one2many_catalog',
+						'value'       => $value,
+						'options'     => $catalogs,
+					)
+				)
+			);
+		}
+
+		/**
 		 * Render portfolio galleries html
 		 *
-		 * @param array $post the custom post.
+		 * @param Post $post the custom post.
 		 */
 		public function efod_portfolio_metabox_portfolio_galleries_html( $post ) {
 			// Add a nonce field so we can check for it later.
@@ -336,9 +409,31 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 		}
 
 		/**
+		 * Render portfolio client icon
+		 *
+		 * @param Post $post the custom post.
+		 */
+		public function efod_portfolio_metabox_portfolio_client_icon_html( $post ) {
+			// Add a nonce field so we can check for it later.
+			wp_nonce_field( 'efod_portfolio_client_icon_nonce', 'efod_portfolio_client_icon_nonce' );
+			$value = get_post_meta( $post->ID, 'efod_portfolio_client_icon', true );
+
+			echo esc_html(
+				$this->create_input(
+					'img',
+					(object) array(
+						'name'        => 'efod_portfolio_client_icon',
+						'id'          => 'efod_portfolio_client_icon',
+						'value'       => $value,
+					)
+				)
+			);
+		}
+
+		/**
 		 * Custom input portfolio project period
 		 *
-		 * @param array $post the custom post.
+		 * @param Post $post the custom post.
 		 */
 		public function efod_portfolio_metabox_project_period_html( $post ) {
 				// Add a nonce field so we can check for it later.
@@ -361,7 +456,7 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 		/**
 		 * Custom input portfolio link
 		 *
-		 * @param array $post the custom post.
+		 * @param Post $post the custom post.
 		 */
 		public function efod_portfolio_metabox_project_link_html( $post ) {
 				// Add a nonce field so we can check for it later.
@@ -434,7 +529,7 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 			}
 
 			foreach ( $args['field'] as $field ) {
-				if ( strpos( $field, 'checkbox' ) === 0 ) {
+				if ( ! strpos( $field, 'checkbox' ) ) {
 					// process non checkbox input.
 					// Sanitize user input.
 					if ( ! isset( $_POST[ $field ] ) ) {
@@ -444,7 +539,7 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 					update_post_meta( $post_id, $field, $my_data );
 				}
 
-				if ( strpos( $field, 'checkbox' ) > 0 ) {
+				if ( strpos( $field, 'checkbox' ) ) {
 					// Process checkbox or radio input.
 					update_post_meta( $post_id, $field, isset( $_POST[ $field ] ) ? 'yes' : 'no' );
 				}
@@ -524,7 +619,48 @@ if ( ! class_exists( 'Efod_Custom_Post' ) ) {
 							value="<?php echo esc_html( join( ',', $image_ids ) ); ?>" 
 							class="ef-cpt-meta-img-galleries__input_hidden" />
 					<?php
-					echo '<button id="' . $args->id . '" class="button ef-cpt-meta-img-galleries__add_btn" type="button">' . __( 'Add Images', 'efod-theme' ) . '</button>';
+					echo '<button id="' . $args->id . '" class="button ef-cpt-meta-img-galleries__add_btn" type="button">' . __( 'Add Images', 'efod-framework' ) . '</button>';
+					break;
+
+				case 'img':
+					$image_id = $args->value;
+					?>
+						<ul class="ef-cpt-meta-img-galleries__list">
+							<?php
+								$url = wp_get_attachment_image_url( $image_id, array( 80, 80 ) ); 
+								if ($url): ?>
+									<li data-id="<?php echo $image_id ?>">
+										<span style="background-image:url('<?php echo $url ?>')"></span>
+									</li>
+								<?php endif; ?>
+						</ul>
+						<input 
+							type="hidden" 
+							name="<?php echo esc_html( $args->name ); ?>" 
+							value="<?php echo esc_html( $image_id ); ?>" 
+							class="ef-cpt-meta-img-galleries__input_hidden" />
+					<?php
+					echo '<button id="' . $args->id . '" class="button ef-cpt-meta-img-galleries__add_btn" data-attr-is-single="true" type="button">' . __( 'Add Image', 'efod-framework' ) . '</button>';
+					break;
+
+				case 'select':
+					$options = ''; $selected = '';
+					foreach( $args->options as $opt ) {
+						if ( $args->value == $opt['value'] ) {
+							$selected = 'selected';
+						} else { 
+							$selected = '';
+						}
+						$options .= '<option value="' . $opt['value'] . '" ' . $selected . '>' . $opt['label'] . '</option>';
+					}
+					echo '<label style="' . ( isset( $args->style ) ? $args->style : '' ) . '">
+						<select 
+							name="' . $args->name . '"
+							id="' . $args->id . '">
+							<option value="">--Select Catalog--</option>
+							' . $options . '
+						</select>
+					</label>';
 					break;
 
 				default:
