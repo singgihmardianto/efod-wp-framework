@@ -22,6 +22,13 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 		protected $cat_options;
 
 		/**
+		 * Widget options
+		 * 
+		 * @var widget_options
+		 */
+		protected $widget_options;
+
+		/**
 		 * Array of query arguments
 		 *
 		 * @var query_args
@@ -52,6 +59,15 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 			foreach ( $catalog_cat_arr as $cat ) {
 				$this->cat_options[ $cat->slug ] = esc_html( $cat->name );
 			}
+
+			/**
+			 * Widget display options
+			 */
+			$this->widget_options = [
+				'list'      => 'List',
+				'tab'       => 'Tab',
+				'accordion' => 'Accordion'
+			];
 
 			/**
 			 * Construct catalog query args
@@ -89,7 +105,7 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 		 * @return string widget icon
 		 */
 		public function get_icon() {
-			return 'fa fa-code';
+			return 'eicon-folder';
 		}
 
 		/**
@@ -214,18 +230,22 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 				)
 			);
 
-			$this->add_control(
+			$this->add_responsive_control(
 				'layout_type',
 				array(
-					'label'   => __( 'Layout Type', 'efod-framework' ),
-					'type'    => \Elementor\Controls_Manager::SELECT,
-					'default' => 'grid-3',
-					'options' => array(
+					'label'           => __( 'Layout Type', 'efod-framework' ),
+					'type'            => \Elementor\Controls_Manager::SELECT,
+					'options'         => array(
 						'grid-3'    => __( 'Grid 3 Column', 'efod-framework' ),
 						'grid-4'    => __( 'Grid 4 Column', 'efod-framework' ),
 						'masonry-3' => __( 'Masonry 3 column', 'efod-framework' ),
 						'masonry-4' => __( 'Masonry 4 column', 'efod-framework' ),
+						'tab'       => __( 'Tab', 'efod-framework' ),
+						'accordion' => __( 'Accordion', 'efod-framework' )
 					),
+					'desktop_default' => 'grid-3',
+					'tablet_default'  => 'grid-3',
+					'mobile_default'  => 'grid-3'
 				)
 			);
 
@@ -249,27 +269,125 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 			// get widget settings.
 			$settings = $this->get_settings_for_display();
 
-			$this->query_args['posts_per_page'] = $settings['data_counts'];
+			$determined_layout_type = $this->determine_responsive_class(
+				$settings['layout_type'], 
+				$settings['layout_type_tablet'] ?? 'grid-3', 
+				$settings['layout_type_mobile'] ?? 'grid-3'
+			);
+			
+			$q = null;
 
-			if ( 'default' !== $settings['catalog_widget_filter'] ) {
-				// phpcs:ignore
-				$this->query_args['tax_query'] = array(
-					array(
-						'taxonomy' => 'catalog_category',
-						'field'    => 'slug',
-						'terms'    => $settings['catalog_widget_filter'],
-					),
+			if ($determined_layout_type['list']) {
+				// if used in any screen
+				$tax_category        = $settings['catalog_widget_filter'];
+				$q_filter = array(
+					'post_type'      => 'catalog',
+					'post_status'    => 'publish',
+					'posts_per_page' => $settings['data_counts'],
+					'orderby'        => 'id',
+					'order'          => 'DESC',
+					'paged'          => ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1,
+					'tax_query'		 => array(
+						array(
+							'taxonomy' => 'catalog_category',
+							'field'    => 'slug',
+							'terms'    => '' === $tax_category ? 'default' : $tax_category,
+						),
+					)
 				);
+				$q = new WP_Query( $q_filter );
 			}
 
-			get_template_part(
-				'loop',
-				'catalog',
-				array(
-					'query_filter' => $this->query_args,
-					'settings'     => $settings,
-				)
+			$terms = null;
+			if ($determined_layout_type['tab'] || $determined_layout_type['accordion']) {
+				$_terms = get_terms( 'catalog_category', array(
+					'hide_empty' => 0
+				));
+
+				$terms = array();
+				foreach ($_terms as $term) {
+					$q_filter = array(
+						'post_type'      => 'catalog',
+						'post_status'    => 'publish',
+						'posts_per_page' => $settings['data_counts'],
+						'orderby'        => 'id',
+						'order'          => 'DESC',
+						'paged'          => ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1,
+						'tax_query'		 => array(
+							array(
+								'taxonomy' => 'catalog_category',
+								'field'    => 'slug',
+								'terms'    => $term->slug,
+							),
+						)
+					);
+					$q = new WP_Query( $q_filter );
+					$terms[] = [
+						'term' => $term,
+						'q' => $q
+					];
+				}
+			}
+
+
+			$data = array_merge($settings, array(
+				'q' => $q && $q->have_posts() ? $q : null,
+				'terms' => $terms ? $terms : null,
+				'responsive_layout_type' => $determined_layout_type
+			));
+
+			efod_get_views(
+				'widgets/loop-catalog',
+				$data
 			);
+		}
+
+		/**
+		 * Determine class from responsive control 'layout_type'
+		 * 
+		 * @param string $medias 'layout_type', 'layout_type_tablet', 'layout_type_mobile' must be declare sequentially
+		 * @return array $responsive_result is a mixed array with key is layout_type and value is the responsive class (d-lg-block, etc)
+		 */
+		function determine_responsive_class( string ...$medias ) {
+			$responsive_result = array(
+				"list" => "",
+				"tab" => "",
+				"accordion" => ""
+			);
+
+			$temp = null; $str_responsive = [];
+			foreach ($medias as $i => $media) {
+				$_i = "";
+				switch($i){
+					case 0:
+						$_i = 'ef-d-lg-block'; break;
+					case 1:
+						$_i = 'ef-d-md-block'; break;
+					case 2: 
+						$_i = 'ef-d-sm-block'; break;
+					default:
+					$_i = ''; break;
+				}
+
+				if ( $temp == null ) {
+					$str_responsive[] = $_i; $temp = $media;
+				} else if ( $temp != null && $temp == $media) {
+					$str_responsive[] = $_i;
+				} else if ( $temp != null && $temp != $media) {
+					$str_responsive[] = 'd-none';
+					$_temp = in_array( $temp , ['grid-3', 'grid-4', 'masonry-3', 'masonry-4'] ) ? 'list' : $temp;
+					$responsive_result[$_temp] = join(' ', $str_responsive);
+					$temp = $media;
+					$str_responsive = [];
+					$str_responsive[] = $_i;
+				}
+			}
+			if (count($str_responsive) > 0 && $temp != null) {
+				$str_responsive[] = 'd-none';
+				$_temp = in_array( $temp , ['grid-3', 'grid-4', 'masonry-3', 'masonry-4'] ) ? 'list' : $temp;
+				$responsive_result[$_temp] = join(' ', $str_responsive);
+			}
+			return $responsive_result;
 		}
 
 	}
