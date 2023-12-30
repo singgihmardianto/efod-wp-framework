@@ -56,6 +56,7 @@ class Efod_Framework {
 	public function __construct() {
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'init_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array($this, 'init_public_assets' ) );
 	}
 
 	/**
@@ -72,6 +73,7 @@ class Efod_Framework {
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
 
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-efod-methods.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-efod-custom-post.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-efod-elementor.php';
 	}
@@ -81,14 +83,27 @@ class Efod_Framework {
 	 */
 	public function init_scripts() {
 		wp_register_script(
-			'efod-framework-js',
-			plugin_dir_url( __FILE__ ) . '../public/js/index.js',
+			'efod-framework-admin-js',
+			plugin_dir_url( __FILE__ ) . '../public/js/admin.js',
 			array(),
 			EFOD_FRAMEWORK_VERSION,
 			true
 		);
-		wp_enqueue_style( 'efod-framework-css', plugin_dir_url( __FILE__ ) . '../public/css/admin.css', array(), EFOD_FRAMEWORK_VERSION );
-		wp_enqueue_script( 'efod-framework-js' );
+		wp_enqueue_script( 'efod-framework-admin-js' );
+		wp_enqueue_style( 'efod-framework-styles', plugin_dir_url( __FILE__ ) . '../public/css/admin.css', array(), EFOD_FRAMEWORK_VERSION );
+	}
+
+	public function init_public_assets() {
+
+		wp_register_script(
+			'efod-js',
+			plugin_dir_url( __FILE__ ) . '../public/js/public.js',
+			array(),
+			EFOD_FRAMEWORK_VERSION,
+			true
+		);
+		wp_enqueue_script( 'efod-js' );
+		wp_enqueue_style( 'efod-styles', plugin_dir_url( __FILE__ ) . '../public/css/public.css', array(), EFOD_FRAMEWORK_VERSION );
 	}
 }
 

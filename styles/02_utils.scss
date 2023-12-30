@@ -1,0 +1,32 @@
+@include media-breakpoint-up(lg) {
+	.ef-d-lg-block {
+		display: block !important;
+	}
+
+	.ef-d-md-block,
+	.ef-d-sm-block {
+		display: none;
+	}
+}
+
+@include media-breakpoint-only(md) {
+	.ef-d-md-block {
+		display: block !important;
+	}
+
+	.ef-d-lg-block,
+	.ef-d-sm-block {
+		display: none;
+	}
+}
+
+@include media-breakpoint-down(sm) {
+	.ef-d-sm-block {
+		display: block !important;
+	}
+
+	.ef-d-lg-block,
+	.ef-d-md-block {
+		display: none;
+	}
+}
