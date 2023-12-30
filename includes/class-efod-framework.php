@@ -56,7 +56,7 @@ class Efod_Framework {
 	public function __construct() {
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'init_scripts' ) );
-		add_action( 'wp_enqueue_scripts', array($this, 'init_public_assets' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'init_public_assets' ) );
 	}
 
 	/**
@@ -93,8 +93,10 @@ class Efod_Framework {
 		wp_enqueue_style( 'efod-framework-styles', plugin_dir_url( __FILE__ ) . '../public/css/admin.css', array(), EFOD_FRAMEWORK_VERSION );
 	}
 
+	/**
+	 * Initialize public styles & scripts
+	 */
 	public function init_public_assets() {
-
 		wp_register_script(
 			'efod-js',
 			plugin_dir_url( __FILE__ ) . '../public/js/public.js',

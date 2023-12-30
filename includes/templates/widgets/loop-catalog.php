@@ -1,28 +1,27 @@
 <?php
 /**
  * This file handle loop of custom post type: catalog
- * 
+ *
  * @package efod-theme
  */
 
 /**
  * $args is arguments from elementor. We use this template for widgets and archive page
  * so we need to declare default value and override with elementor $args if exists.
- *
  */
 
 if ( empty( $args ) ) {
-	$args                 = array(
+	$args = array(
 		'title'           => '',
 		'description'     => '',
 		'data_counts'     => get_option( 'posts_per_page' ),
 		'pagination_type' => 'slider',
 		'layout_type'     => 'masonry-4',
-		'q'				  => null
+		'q'               => null,
 	);
 }
 
-$_layout_list_options = ['grid-3', 'grid-4', 'masonry-3', 'masonry-4'];
+$_layout_list_options = array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' );
 
 if ( $q && $q->have_posts() ) { ?>
 	<?php if ( ! empty( $title ) ) : ?>
@@ -59,35 +58,45 @@ if ( $q && $q->have_posts() ) { ?>
 					</div> <!-- .ef-widget__catalog -->
 				<?php endwhile; ?>
 			</div> <!-- .ef-loop-container.ef-catalog -->
-			<?php 
+			<?php
 			efod_pagination_links(
 				array(
-					'q'             => $q, 
-					'type'          => $pagination_type, 
+					'q'             => $q,
+					'type'          => $pagination_type,
 					'post_type'     => 'catalogs',
-					'post_per_page' => $data_counts
-				) 
-			); 
+					'post_per_page' => $data_counts,
+				)
+			);
 			?>
 		</div> <!-- .ef-loop.ef-paginate -->
 	<?php endif; ?>
 	<?php if ( $responsive_layout_type && ! empty( $responsive_layout_type['tab'] ) ) : ?>
 		<div class="ef-loop ef-tabs <?php echo esc_html( $responsive_layout_type['tab'] ); ?>">
 			<ul class="nav nav-tabs" id="efCatalogTab" role="tablist">
-				<?php foreach ($terms as $i => $tax_term): $term = $tax_term['term']; ?>
+				<?php
+				foreach ( $terms as $i => $tax_term ) :
+					$cur_term = $tax_term['term'];
+					?>
 					<li class="nav-item" role="presentation">
-						<button class="nav-link <?php echo $i == 0 ? 'active':''; ?>" id="<?php echo $term->slug;?>-tab" data-bs-toggle="tab" data-bs-target="#<?php echo esc_html($term->slug);?>-tab-pane" type="button" role="tab" <?php echo $i == 0 ? 'aria-selected="true"' : '';?>><?php echo esc_html($term->name); ?></button>
+						<button class="nav-link <?php echo esc_html( 0 === $i ? 'active' : '' ); ?>" id="<?php echo esc_html( $cur_term->slug ); ?>-tab" data-bs-toggle="tab" data-bs-target="#<?php echo esc_html( $cur_term->slug ); ?>-tab-pane" type="button" role="tab"><?php echo esc_html( $cur_term->name ); ?></button>
 					</li>	
 				<?php endforeach; ?>
 			</ul> <!--.nav.nav-tabs -->
 			<div class="tab-content" id="efCatalogTabContent">
-				<?php foreach ($terms as $i => $tax_term): $term = $tax_term['term']; $q = $tax_term['q']; ?>
-					<div class="tab-pane fade <?php echo $i == 0 ? 'show active' : 'fade'; ?>" id="<?php echo esc_html($term->slug);?>-tab-pane" role="tabpanel" tabindex="<?php echo $i; ?>">
+				<?php
+				foreach ( $terms as $i => $tax_term ) :
+					$cur_term = $tax_term['term'];
+					$q        = $tax_term['q'];
+					?>
+					<div class="tab-pane fade <?php echo esc_html( 0 === $i ? 'show active' : 'fade' ); ?>" id="<?php echo esc_html( $cur_term->slug ); ?>-tab-pane" role="tabpanel">
 						<ul>
-							<?php while($q->have_posts()): $q->the_post();?>
+							<?php
+							while ( $q->have_posts() ) :
+								$q->the_post();
+								?>
 								<li>
-									<span class=""><?php echo the_title(); ?></span>
-									<a href="<?php echo the_permalink(); ?>"><i class="fa-solid fa-chevron-right"></i></a>
+									<span class=""><?php echo esc_html( the_title() ); ?></span>
+									<a href="<?php echo esc_html( the_permalink() ); ?>"><i class="fa-solid fa-chevron-right"></i></a>
 								</li>
 							<?php endwhile; ?>
 						</ul>
@@ -99,20 +108,27 @@ if ( $q && $q->have_posts() ) { ?>
 	<?php if ( $responsive_layout_type && ! empty( $responsive_layout_type['accordion'] ) ) : ?>
 		<div class="ef-loop ef-accordion <?php echo esc_html( $responsive_layout_type['accordion'] ); ?>">
 			<div class="accordion accordion-flush" id="catalog_accord">
-				<?php foreach ($terms as $i => $tax_term): $term = $tax_term['term']; $q = $tax_term['q']; ?>
+				<?php
+				foreach ( $terms as $i => $tax_term ) :
+					$cur_term = $tax_term['term'];
+					$q        = $tax_term['q'];
+					?>
 					<div class="accordion-item">
 						<h2 class="accordion-header">
-							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ef-accord-<?php echo esc_html($term->slug); ?>" aria-expanded="false" aria-controls="ef-accord-<?php echo esc_html($term->slug); ?>">
-								<?php echo esc_html( $term->name ); ?>
+							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ef-accord-<?php echo esc_html( $cur_term->slug ); ?>" aria-expanded="false" aria-controls="ef-accord-<?php echo esc_html( $cur_term->slug ); ?>">
+								<?php echo esc_html( $cur_term->name ); ?>
 							</button>  <!-- .accordion-button -->
 						</h2>  <!-- .accordion-header -->
-						<div id="ef-accord-<?php echo esc_html($term->slug); ?>" class="accordion-collapse collapse" data-bs-parent="#catalog_accord">
+						<div id="ef-accord-<?php echo esc_html( $cur_term->slug ); ?>" class="accordion-collapse collapse" data-bs-parent="#catalog_accord">
 							<div class="accordion-body">
 								<ul>
-									<?php while($q->have_posts()): $q->the_post();?>
+									<?php
+									while ( $q->have_posts() ) :
+										$q->the_post();
+										?>
 										<li>
-											<span class=""><?php echo the_title(); ?></span>
-											<a href="<?php echo the_permalink(); ?>"><i class="fa-solid fa-chevron-right"></i></a>
+											<span class=""><?php echo esc_html( the_title() ); ?></span>
+											<a href="<?php echo esc_html( the_permalink() ); ?>"><i class="fa-solid fa-chevron-right"></i></a>
 										</li>
 									<?php endwhile; ?>
 								</ul>
@@ -122,7 +138,8 @@ if ( $q && $q->have_posts() ) { ?>
 				<?php endforeach; ?>
 			</div>  <!-- .accordion.accordion-flush -->
 		</div> <!-- .ef-loop.ef-accordion -->
-	<?php endif;
+		<?php
+	endif;
 } else {
 	efod_get_views( 'content-none' );
 }

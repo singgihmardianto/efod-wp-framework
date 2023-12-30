@@ -1,2 +1,2 @@
 /** global jQuery, wp */
-import "bootstrap/dist/js/bootstrap.bundle";
+import 'bootstrap/dist/js/bootstrap.bundle';

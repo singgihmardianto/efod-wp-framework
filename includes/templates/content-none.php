@@ -1,1 +1,6 @@
-<p>No data.</p>
+<?php
+/**
+ * Default no content view.
+ *
+ * @package efod-framework
+ */

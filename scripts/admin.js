@@ -1,9 +1,9 @@
 /** global jQuery, wp */
-import cptInputHandler from "./cpt-input-handler.js";
-import * as bootstrap from "bootstrap";
+import cptInputHandler from './cpt-input-handler.js';
+import 'bootstrap/dist/js/bootstrap.bundle';
 
-(function ($, wp) {
-	"use strict";
+( function ( $, wp ) {
+	'use strict';
 
 	/**
 	 * All of the code for your admin-facing JavaScript source
@@ -32,9 +32,6 @@ import * as bootstrap from "bootstrap";
 	 * Although scripts in the WordPress core, Plugins and Themes may be
 	 * practising this, we should strive to set a better example in our own work.
 	 */
-	const myCptInputHandler = cptInputHandler($, wp);
+	const myCptInputHandler = cptInputHandler( $, wp );
 	myCptInputHandler.run();
-
-	// Load bootstrap tab
-	const bsTab = new bootstrap.Tab(".nav-tabs");
 })(jQuery, wp); //eslint-disable-line

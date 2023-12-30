@@ -1,13 +1,27 @@
 <?php
+/**
+ * The file that declare all helper methods
+ *
+ * @package    efod-framework
+ */
 
-if ( ! function_exists('efod_get_views') ) {
+if ( ! function_exists( 'efod_get_views' ) ) {
+	/**
+	 * Load view files under folder /include/templates.
+	 *
+	 * @param string $slug file path slug.
+	 * @param arrray $variables data pass to file.
+	 */
 	function efod_get_views( $slug, $variables = array() ) {
 		$file = plugin_dir_path( __FILE__ ) . 'templates/' . $slug . '.php';
 
-		if ( $variables ) {
-			extract( $variables );
+		if ( $variables && count( $variables ) > 0 ) {
+			// Iterate over the $variables array and create variables dynamically.
+			foreach ( $variables as $key => $value ) {
+				${$key} = $value;
+			}
 		}
-	
+
 		if ( file_exists( $file ) ) {
 			include $file;
 		}
@@ -25,8 +39,8 @@ if ( ! function_exists( 'efod_the_thumbnail' ) ) {
 		if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
 			return;
 		}
-		
-		if ( ! is_singular() ) : 
+
+		if ( ! is_singular() ) :
 			?>
 
 			<a class="post-thumbnail" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
@@ -83,16 +97,16 @@ if ( ! function_exists( 'efod_custom_posts_meta' ) ) {
 	function efod_custom_posts_meta( $type = 'catalog' ) {
 		$author = '<span class="ef-meta-author"><a class="url fn n" href="' . esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ) . '"><i class="fa-solid fa-user"></i> ' . esc_html( get_the_author() ) . '</a></span>';
 
-		$category  = ''; 
-		$term_id   = 0; 
+		$category  = '';
+		$term_id   = 0;
 		$term_name = '';
 		$term_type = '';
 		$terms     = '';
 		$url       = '';
-		
+
 		if ( in_array( $type, array( 'catalog', 'portfolio' ), true ) ) {
 			$term_type = $type . '_category';
-		} 
+		}
 
 		if ( 'posts' === $type ) {
 			$term_type = 'category';
@@ -106,7 +120,7 @@ if ( ! function_exists( 'efod_custom_posts_meta' ) ) {
 			$term_id   = $terms[0]->term_id; // get primary term.
 			$term_name = $terms[0]->name;
 		}
-		
+
 		// if is custom post type, then get term by term_type.
 		// only applied for: catalog & portfolio.
 		if ( ! empty( $term_id ) && ! empty( $term_type ) ) {
@@ -117,7 +131,7 @@ if ( ! function_exists( 'efod_custom_posts_meta' ) ) {
 		if ( ! empty( $term_id ) ) {
 			$url = get_term_link( $term_id );
 		}
-		
+
 		if ( ! empty( $url ) ) {
 			$category = ' <span class="ef-meta-category"><a class="url fn n" href="' . esc_url( $url ) . '"><i class="fa-solid fa-folder"></i> ' . esc_html( $term_name ) . '</a></span>';
 		}
@@ -144,21 +158,21 @@ if ( ! function_exists( 'efod_pagination_links' ) ) {
 			case 'load_button':
 				?>
 					<div class="ef-pagination-wrapper"> 
-					<?php 
-					if ( $params['q']->max_num_pages > 1 ) : 
+					<?php
+					if ( $params['q']->max_num_pages > 1 ) :
 						?>
 						<button class="ef-btn-pagination btn_fetch_pagination_load_more" 
 							data-post-type="<?php echo esc_html( $params['post_type'] ); ?>"
 							data-post-per-page="<?php echo esc_html( $params['post_per_page'] ); ?>">
-							<?php echo esc_html__( 'Load More', 'efod-theme' ); ?>
+							<?php echo esc_html__( 'Load More', 'efod-framework' ); ?>
 						</button>
 						<?php
-					endif; 
+					endif;
 					?>
 					</div>
 					<?php
 				break;
-			
+
 			case 'slider':
 				if ( $params['q']->max_num_pages > 1 ) :
 					?>
@@ -176,12 +190,12 @@ if ( ! function_exists( 'efod_pagination_links' ) ) {
 					<?php
 				endif;
 				break;
-	
+
 			default:
 				?>
 				<div class="ef-pagination-wrapper">
-					<?php 
-					for ( $i = 0; $i < $params['q']->max_num_pages; $i++ ) : 
+					<?php
+					for ( $i = 0; $i < $params['q']->max_num_pages; $i++ ) :
 						?>
 							<button class="ef-btn-pagination btn_fetch_pagination" 
 								data-post-type="<?php echo esc_html( $params['post_type'] ); ?>"
@@ -190,10 +204,10 @@ if ( ! function_exists( 'efod_pagination_links' ) ) {
 								<?php echo esc_html( $i + 1 ); ?>
 							</button>
 						<?php
-					endfor; 
+					endfor;
 					?>
 				</div>
-				<?php 
+				<?php
 				break;
 		}
 	}

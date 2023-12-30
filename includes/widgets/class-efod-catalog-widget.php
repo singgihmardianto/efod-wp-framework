@@ -23,7 +23,7 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 
 		/**
 		 * Widget options
-		 * 
+		 *
 		 * @var widget_options
 		 */
 		protected $widget_options;
@@ -63,11 +63,11 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 			/**
 			 * Widget display options
 			 */
-			$this->widget_options = [
+			$this->widget_options = array(
 				'list'      => 'List',
 				'tab'       => 'Tab',
-				'accordion' => 'Accordion'
-			];
+				'accordion' => 'Accordion',
+			);
 
 			/**
 			 * Construct catalog query args
@@ -241,11 +241,11 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 						'masonry-3' => __( 'Masonry 3 column', 'efod-framework' ),
 						'masonry-4' => __( 'Masonry 4 column', 'efod-framework' ),
 						'tab'       => __( 'Tab', 'efod-framework' ),
-						'accordion' => __( 'Accordion', 'efod-framework' )
+						'accordion' => __( 'Accordion', 'efod-framework' ),
 					),
 					'desktop_default' => 'grid-3',
 					'tablet_default'  => 'grid-3',
-					'mobile_default'  => 'grid-3'
+					'mobile_default'  => 'grid-3',
 				)
 			);
 
@@ -270,42 +270,46 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 			$settings = $this->get_settings_for_display();
 
 			$determined_layout_type = $this->determine_responsive_class(
-				$settings['layout_type'], 
-				$settings['layout_type_tablet'] ?? 'grid-3', 
-				$settings['layout_type_mobile'] ?? 'grid-3'
+				$settings['layout_type'],
+				$settings['layout_type_tablet'] ? $settings['layout_type_tablet'] : 'grid-3',
+				$settings['layout_type_mobile'] ? $settings['layout_type_mobile'] : 'grid-3'
 			);
-			
+
 			$q = null;
 
-			if ($determined_layout_type['list']) {
-				// if used in any screen
-				$tax_category        = $settings['catalog_widget_filter'];
-				$q_filter = array(
+			if ( $determined_layout_type['list'] ) {
+				// if used in any screen.
+				$tax_category = $settings['catalog_widget_filter'];
+				$q_filter     = array(
 					'post_type'      => 'catalog',
 					'post_status'    => 'publish',
 					'posts_per_page' => $settings['data_counts'],
 					'orderby'        => 'id',
 					'order'          => 'DESC',
 					'paged'          => ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1,
-					'tax_query'		 => array(
+					// phpcs:ignore
+					'tax_query'      => array(
 						array(
 							'taxonomy' => 'catalog_category',
 							'field'    => 'slug',
 							'terms'    => '' === $tax_category ? 'default' : $tax_category,
 						),
-					)
+					),
 				);
-				$q = new WP_Query( $q_filter );
+				$q            = new WP_Query( $q_filter );
 			}
 
 			$terms = null;
-			if ($determined_layout_type['tab'] || $determined_layout_type['accordion']) {
-				$_terms = get_terms( 'catalog_category', array(
-					'hide_empty' => 0
-				));
+			if ( $determined_layout_type['tab'] || $determined_layout_type['accordion'] ) {
+				$_terms = get_terms(
+					'catalog_category',
+					array(
+						'hide_empty' => 0,
+					)
+				);
 
 				$terms = array();
-				foreach ($_terms as $term) {
+				foreach ( $_terms as $term ) {
 					$q_filter = array(
 						'post_type'      => 'catalog',
 						'post_status'    => 'publish',
@@ -313,28 +317,31 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 						'orderby'        => 'id',
 						'order'          => 'DESC',
 						'paged'          => ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1,
-						'tax_query'		 => array(
+						// phpcs:ignore
+						'tax_query'      => array(
 							array(
 								'taxonomy' => 'catalog_category',
 								'field'    => 'slug',
 								'terms'    => $term->slug,
 							),
-						)
+						),
 					);
-					$q = new WP_Query( $q_filter );
-					$terms[] = [
+					$q        = new WP_Query( $q_filter );
+					$terms[]  = array(
 						'term' => $term,
-						'q' => $q
-					];
+						'q'    => $q,
+					);
 				}
 			}
 
-
-			$data = array_merge($settings, array(
-				'q' => $q && $q->have_posts() ? $q : null,
-				'terms' => $terms ? $terms : null,
-				'responsive_layout_type' => $determined_layout_type
-			));
+			$data = array_merge(
+				$settings,
+				array(
+					'q'                      => $q && $q->have_posts() ? $q : null,
+					'terms'                  => $terms ? $terms : null,
+					'responsive_layout_type' => $determined_layout_type,
+				)
+			);
 
 			efod_get_views(
 				'widgets/loop-catalog',
@@ -343,49 +350,55 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 		}
 
 		/**
-		 * Determine class from responsive control 'layout_type'
-		 * 
-		 * @param string $medias 'layout_type', 'layout_type_tablet', 'layout_type_mobile' must be declare sequentially
-		 * @return array $responsive_result is a mixed array with key is layout_type and value is the responsive class (d-lg-block, etc)
+		 * Determine class from responsive control 'layout_type'.
+		 *
+		 * @param string ...$medias is an array of string which contain: 'layout_type', 'layout_type_tablet', 'layout_type_mobile' and must be declare sequentially.
+		 * @return array $responsive_result is a mixed array with key is layout_type and value is the responsive class (d-lg-block, etc).
 		 */
-		function determine_responsive_class( string ...$medias ) {
+		private function determine_responsive_class( ...$medias ) {
 			$responsive_result = array(
-				"list" => "",
-				"tab" => "",
-				"accordion" => ""
+				'list'      => '',
+				'tab'       => '',
+				'accordion' => '',
 			);
 
-			$temp = null; $str_responsive = [];
-			foreach ($medias as $i => $media) {
-				$_i = "";
-				switch($i){
+			$temp           = null;
+			$str_responsive = array();
+			foreach ( $medias as $i => $media ) {
+				$_i = '';
+				switch ( $i ) {
 					case 0:
-						$_i = 'ef-d-lg-block'; break;
+						$_i = 'ef-d-lg-block';
+						break;
 					case 1:
-						$_i = 'ef-d-md-block'; break;
-					case 2: 
-						$_i = 'ef-d-sm-block'; break;
+						$_i = 'ef-d-md-block';
+						break;
+					case 2:
+						$_i = 'ef-d-sm-block';
+						break;
 					default:
-					$_i = ''; break;
+						$_i = '';
+						break;
 				}
 
-				if ( $temp == null ) {
-					$str_responsive[] = $_i; $temp = $media;
-				} else if ( $temp != null && $temp == $media) {
+				if ( null === $temp ) {
 					$str_responsive[] = $_i;
-				} else if ( $temp != null && $temp != $media) {
-					$str_responsive[] = 'd-none';
-					$_temp = in_array( $temp , ['grid-3', 'grid-4', 'masonry-3', 'masonry-4'] ) ? 'list' : $temp;
-					$responsive_result[$_temp] = join(' ', $str_responsive);
-					$temp = $media;
-					$str_responsive = [];
+					$temp             = $media;
+				} elseif ( null !== $temp && $temp === $media ) {
 					$str_responsive[] = $_i;
+				} elseif ( null !== $temp && $temp !== $media ) {
+					$str_responsive[]            = 'd-none';
+					$_temp                       = in_array( $temp, array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' ), true ) ? 'list' : $temp;
+					$responsive_result[ $_temp ] = join( ' ', $str_responsive );
+					$temp                        = $media;
+					$str_responsive              = array();
+					$str_responsive[]            = $_i;
 				}
 			}
-			if (count($str_responsive) > 0 && $temp != null) {
-				$str_responsive[] = 'd-none';
-				$_temp = in_array( $temp , ['grid-3', 'grid-4', 'masonry-3', 'masonry-4'] ) ? 'list' : $temp;
-				$responsive_result[$_temp] = join(' ', $str_responsive);
+			if ( 0 > count( $str_responsive ) && null !== $temp ) {
+				$str_responsive[]            = 'd-none';
+				$_temp                       = in_array( $temp, array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' ), true ) ? 'list' : $temp;
+				$responsive_result[ $_temp ] = join( ' ', $str_responsive );
 			}
 			return $responsive_result;
 		}
