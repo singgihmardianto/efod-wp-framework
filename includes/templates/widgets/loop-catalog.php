@@ -2,7 +2,7 @@
 /**
  * This file handle loop of custom post type: catalog
  *
- * @package efod-theme
+ * @package efod-framework
  */
 
 /**
@@ -21,7 +21,9 @@ if ( empty( $args ) ) {
 	);
 }
 
-$_layout_list_options = array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' );
+// Grouped some types into another array
+$is_list_layout = array_intersect_key($responsive_layout_type, array_flip(['grid-3', 'grid-4', 'masonry-3', 'masonry-4']));
+$joined_list_value = join(" ", $is_list_layout);
 
 if ( $q && $q->have_posts() ) { ?>
 	<?php if ( ! empty( $title ) ) : ?>
@@ -30,8 +32,9 @@ if ( $q && $q->have_posts() ) { ?>
 	<?php if ( ! empty( $description ) ) : ?>
 		<p class="ef-description"><?php echo esc_html( $description ); ?></p>
 	<?php endif; ?>
-	<?php if ( $responsive_layout_type && ! empty( $responsive_layout_type['list'] ) ) : ?>
-		<div class="ef-loop ef-paginate_<?php echo esc_html( $pagination_type ); ?> <?php echo esc_html( $responsive_layout_type['list'] ); ?>">
+	<?php if ( $responsive_layout_type && ! empty( $joined_list_value ) ) : ?>
+		<div class="ef-loop ef-paginate_<?php echo esc_html( $pagination_type ); ?> 
+			<?php echo esc_html( $joined_list_value ); ?>">
 			<div class="ef-loop-container ef-catalog">
 				<?php
 				while ( $q->have_posts() ) :

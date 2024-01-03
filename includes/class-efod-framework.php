@@ -90,7 +90,15 @@ class Efod_Framework {
 			true
 		);
 		wp_enqueue_script( 'efod-framework-admin-js' );
-		wp_enqueue_style( 'efod-framework-styles', plugin_dir_url( __FILE__ ) . '../public/css/admin.css', array(), EFOD_FRAMEWORK_VERSION );
+		wp_register_style(
+			'efod-framework-styles',
+			plugin_dir_url( __FILE__ ) . '../public/css/admin.css',
+			array(),
+			EFOD_FRAMEWORK_VERSION,
+			true
+		);
+		wp_enqueue_style( 'efod-framework-styles' );
+		
 	}
 
 	/**

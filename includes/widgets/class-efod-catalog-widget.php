@@ -17,9 +17,16 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 		/**
 		 * Array of catalog taxonomies
 		 *
-		 * @var cat_options
+		 * @var array cat_options
 		 */
 		protected $cat_options;
+
+		/**
+		 * Array of layout options
+		 * 
+		 * @var array layout_options;
+		 */
+		protected $layout_options;
 
 		/**
 		 * Widget options
@@ -63,10 +70,13 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 			/**
 			 * Widget display options
 			 */
-			$this->widget_options = array(
-				'list'      => 'List',
-				'tab'       => 'Tab',
-				'accordion' => 'Accordion',
+			$this->layout_options = array(
+				'grid-3'    => __( 'Grid 3 Column', 'efod-framework' ),
+				'grid-4'    => __( 'Grid 4 Column', 'efod-framework' ),
+				'masonry-3' => __( 'Masonry 3 column', 'efod-framework' ),
+				'masonry-4' => __( 'Masonry 4 column', 'efod-framework' ),
+				'tab'       => __( 'Tab', 'efod-framework' ),
+				'accordion' => __( 'Accordion', 'efod-framework' ),
 			);
 
 			/**
@@ -235,14 +245,7 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 				array(
 					'label'           => __( 'Layout Type', 'efod-framework' ),
 					'type'            => \Elementor\Controls_Manager::SELECT,
-					'options'         => array(
-						'grid-3'    => __( 'Grid 3 Column', 'efod-framework' ),
-						'grid-4'    => __( 'Grid 4 Column', 'efod-framework' ),
-						'masonry-3' => __( 'Masonry 3 column', 'efod-framework' ),
-						'masonry-4' => __( 'Masonry 4 column', 'efod-framework' ),
-						'tab'       => __( 'Tab', 'efod-framework' ),
-						'accordion' => __( 'Accordion', 'efod-framework' ),
-					),
+					'options'         => $this->layout_options,
 					'desktop_default' => 'grid-3',
 					'tablet_default'  => 'grid-3',
 					'mobile_default'  => 'grid-3',
@@ -269,15 +272,18 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 			// get widget settings.
 			$settings = $this->get_settings_for_display();
 
-			$determined_layout_type = $this->determine_responsive_class(
+			$determined_layout_type = __efod_determine_responsive_class( array_keys( $this->layout_options ),
 				$settings['layout_type'],
-				$settings['layout_type_tablet'] ? $settings['layout_type_tablet'] : 'grid-3',
-				$settings['layout_type_mobile'] ? $settings['layout_type_mobile'] : 'grid-3'
+				isset($settings['layout_type_tablet']) ? $settings['layout_type_tablet'] : 'grid-3',
+				isset($settings['layout_type_mobile']) ? $settings['layout_type_mobile'] : 'grid-3'
 			);
 
 			$q = null;
 
-			if ( $determined_layout_type['list'] ) {
+			if ( $determined_layout_type['grid-3'] || 
+				 $determined_layout_type['grid-4'] || 
+				 $determined_layout_type['masonry-3'] || 
+				 $determined_layout_type['masonry-4'] ) {
 				// if used in any screen.
 				$tax_category = $settings['catalog_widget_filter'];
 				$q_filter     = array(
@@ -348,60 +354,5 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 				$data
 			);
 		}
-
-		/**
-		 * Determine class from responsive control 'layout_type'.
-		 *
-		 * @param string ...$medias is an array of string which contain: 'layout_type', 'layout_type_tablet', 'layout_type_mobile' and must be declare sequentially.
-		 * @return array $responsive_result is a mixed array with key is layout_type and value is the responsive class (d-lg-block, etc).
-		 */
-		private function determine_responsive_class( ...$medias ) {
-			$responsive_result = array(
-				'list'      => '',
-				'tab'       => '',
-				'accordion' => '',
-			);
-
-			$temp           = null;
-			$str_responsive = array();
-			foreach ( $medias as $i => $media ) {
-				$_i = '';
-				switch ( $i ) {
-					case 0:
-						$_i = 'ef-d-lg-block';
-						break;
-					case 1:
-						$_i = 'ef-d-md-block';
-						break;
-					case 2:
-						$_i = 'ef-d-sm-block';
-						break;
-					default:
-						$_i = '';
-						break;
-				}
-
-				if ( null === $temp ) {
-					$str_responsive[] = $_i;
-					$temp             = $media;
-				} elseif ( null !== $temp && $temp === $media ) {
-					$str_responsive[] = $_i;
-				} elseif ( null !== $temp && $temp !== $media ) {
-					$str_responsive[]            = 'd-none';
-					$_temp                       = in_array( $temp, array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' ), true ) ? 'list' : $temp;
-					$responsive_result[ $_temp ] = join( ' ', $str_responsive );
-					$temp                        = $media;
-					$str_responsive              = array();
-					$str_responsive[]            = $_i;
-				}
-			}
-			if ( 0 > count( $str_responsive ) && null !== $temp ) {
-				$str_responsive[]            = 'd-none';
-				$_temp                       = in_array( $temp, array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' ), true ) ? 'list' : $temp;
-				$responsive_result[ $_temp ] = join( ' ', $str_responsive );
-			}
-			return $responsive_result;
-		}
-
 	}
 }

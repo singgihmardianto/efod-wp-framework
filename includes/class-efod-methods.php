@@ -104,7 +104,7 @@ if ( ! function_exists( 'efod_custom_posts_meta' ) ) {
 		$terms     = '';
 		$url       = '';
 
-		if ( in_array( $type, array( 'catalog', 'portfolio' ), true ) ) {
+		if ( in_array( $type, array( 'catalog' ), true ) ) {
 			$term_type = $type . '_category';
 		}
 
@@ -116,7 +116,7 @@ if ( ! function_exists( 'efod_custom_posts_meta' ) ) {
 			$terms = get_the_terms( get_the_ID(), $term_type );
 		}
 
-		if ( ! empty( $terms ) ) {
+		if ( ! empty( $terms ) && count ( $terms ) > 0) {
 			$term_id   = $terms[0]->term_id; // get primary term.
 			$term_name = $terms[0]->name;
 		}
@@ -210,5 +210,60 @@ if ( ! function_exists( 'efod_pagination_links' ) ) {
 				<?php
 				break;
 		}
+	}
+}
+
+if ( ! function_exists( '__efod_determine_responsive_class' ) ) {
+	/**
+	 * Is a method used in widget class
+	 * From widget control input to strings responsive class
+	 * @param array $layout_options is an array of string layout options e.g: ['grid-3', 'grid-4', 'masonry'];
+	 * @param string ...$medias is an array of string which contain: 'layout_type', 'layout_type_tablet', 'layout_type_mobile' and must be declare sequentially.
+	 * @return array $responsive_result is a mixed array with key is layout_type and value is the responsive class (d-lg-block, etc).
+	 */
+	function __efod_determine_responsive_class( array $layout_options, ...$medias ) {
+		$results = array(); 
+		foreach ($layout_options as $opt) {
+			$results[ $opt ] = '';
+		}
+		// print_r( $layout_options ); print_r( $medias ); die;
+	
+		$temp           = null;
+		$str_responsive = array();
+		foreach ( $medias as $i => $media ) {
+			$_i = '';
+			switch ( $i ) {
+				case 0:
+					$_i = 'ef-d-lg-block';
+					break;
+				case 1:
+					$_i = 'ef-d-md-block';
+					break;
+				case 2:
+					$_i = 'ef-d-sm-block';
+					break;
+				default:
+					$_i = '';
+					break;
+			}
+	
+			if ( null === $temp ) {
+				$str_responsive[] = $_i;
+				$temp             = $media;
+			} elseif ( null !== $temp && $temp === $media ) {
+				$str_responsive[] = $_i;
+			} elseif ( null !== $temp && $temp !== $media ) {
+				$str_responsive[]            = 'd-none';
+				$results[ $temp ] = join( ' ', $str_responsive );
+				$temp                        = $media;
+				$str_responsive              = array();
+				$str_responsive[]            = $_i;
+			}
+		}
+		if ( count( $str_responsive ) > 0 && null !== $temp ) {
+			$str_responsive[]            = 'd-none';
+			$results[ $temp ] = join( ' ', $str_responsive );
+		}
+		return $results;
 	}
 }
