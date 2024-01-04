@@ -15,11 +15,18 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 	class Efod_Portfolio_Widget extends Elementor\Widget_Base {
 
 		/**
-		 * Portfolio Category
+		 * Filter by Catalog Category
 		 *
-		 * @var cat_options
+		 * @var array cat_options
 		 */
 		protected $cat_options;
+
+		/**
+		 * Layout options
+		 *
+		 * @var array layout_options
+		 */
+		protected $layout_options;
 
 		/**
 		 * The query args
@@ -38,22 +45,6 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 			parent::__construct( $data, $args );
 
 			/**
-			 * Construct category option
-			 */
-			$portfolio_cat_arr = get_terms(
-				array(
-					'taxonomy'   => 'portfolio_category',
-					'hide_empty' => false,
-				)
-			);
-
-			$this->cat_options['default'] = esc_html__( 'Show All', 'efod-framework' );
-
-			foreach ( $portfolio_cat_arr as $cat ) {
-				$this->cat_options[ $cat->slug ] = esc_html( $cat->name );
-			}
-
-			/**
 			 * Construct portfolio query args
 			 */
 			$this->query_args = array(
@@ -63,6 +54,28 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 				'orderby'       => 'id',
 				'order'         => 'DESC',
 			);
+
+			// Load filter portfolio by a catalog (post).
+			// Lets assume catalog under a hundred, so it's safe to set the `numberposts` = -1.
+			$_catalogs             = get_posts(
+				array(
+					'post_type'   => 'catalog',
+					'numberposts' => -1,
+				)
+			);
+			$this->cat_options[''] = __( 'Choose Catalog', 'efod-framework' );
+			foreach ( $_catalogs as $catalog ) {
+				$this->cat_options[ $catalog->ID ] = esc_html( $catalog->post_title );
+			}
+
+			// Load layout options.
+			$this->layout_options = array(
+				'grid-3'      => __( 'Grid 3 Column', 'efod-framework' ),
+				'grid-4'      => __( 'Grid 4 Column', 'efod-framework' ),
+				'masonry-3'   => __( 'Masonry 3 column', 'efod-framework' ),
+				'masonry-4'   => __( 'Masonry 4 column', 'efod-framework' ),
+				'single-icon' => __( 'Single Line Icon', 'efod-framework' ),
+			);
 		}
 
 		/**
@@ -71,7 +84,7 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 		 * @return string widget name
 		 */
 		public function get_name() {
-			return 'Efod Portfolio';
+			return 'Efod Portfolio List';
 		}
 
 		/**
@@ -80,7 +93,7 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 		 * @return string widget title
 		 */
 		public function get_title() {
-			return __( 'Efod Portfolio', 'efod-framework' );
+			return __( 'Efod Portfolio List', 'efod-framework' );
 		}
 
 		/**
@@ -89,7 +102,7 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 		 * @return string widget icon
 		 */
 		public function get_icon() {
-			return 'fa fa-code';
+			return 'fa-solid fa-comments';
 		}
 
 		/**
@@ -116,7 +129,7 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 		 * @return array sytle depends
 		 */
 		public function get_style_depends() {
-			return array();
+			return array( 'efod-admin-styles' );
 		}
 
 		/**
@@ -183,7 +196,7 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 			$this->add_control(
 				'portfolio_widget_filter',
 				array(
-					'label'   => __( 'Filter Category', 'efod-framework' ),
+					'label'   => __( 'Filter By Catalog', 'efod-framework' ),
 					'type'    => \Elementor\Controls_Manager::SELECT,
 					'default' => 'default',
 					'options' => $this->cat_options,
@@ -214,18 +227,15 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 				)
 			);
 
-			$this->add_control(
+			$this->add_responsive_control(
 				'layout_type',
 				array(
-					'label'   => __( 'Layout Type', 'efod-framework' ),
-					'type'    => \Elementor\Controls_Manager::SELECT,
-					'default' => 'grid-3',
-					'options' => array(
-						'grid-3'    => __( 'Grid 3 Column', 'efod-framework' ),
-						'grid-4'    => __( 'Grid 4 Column', 'efod-framework' ),
-						'masonry-3' => __( 'Masonry 3 column', 'efod-framework' ),
-						'masonry-4' => __( 'Masonry 4 column', 'efod-framework' ),
-					),
+					'label'           => __( 'Layout Type', 'efod-framework' ),
+					'type'            => \Elementor\Controls_Manager::SELECT,
+					'options'         => $this->layout_options,
+					'desktop_default' => 'grid-3',
+					'tablet_default'  => 'grid-3',
+					'mobile_default'  => 'grid-3',
 				)
 			);
 
@@ -249,26 +259,59 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 			// get settings.
 			$settings = $this->get_settings_for_display();
 
-			$this->query_args['posts_per_page'] = $settings['data_counts'];
+			$determined_layout_type = efod_determine_responsive_class(
+				array_keys( $this->layout_options ),
+				$settings['layout_type'],
+				isset( $settings['layout_type_tablet'] ) ? $settings['layout_type_tablet'] : 'grid-3',
+				isset( $settings['layout_type_mobile'] ) ? $settings['layout_type_mobile'] : 'grid-3'
+			);
 
-			if ( 'default' !== $settings['portfolio_widget_filter'] ) {
+			$q = null;
+
+			$q_filter = array(
+				'post_type'      => 'portfolio',
+				'post_status'    => 'publish',
+				'posts_per_page' => $settings['data_counts'],
+				'orderby'        => 'id',
+				'order'          => 'DESC',
+				'paged'          => ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1,
+			);
+
+			$tax_category = $settings['portfolio_widget_filter'];
+			if ( ! empty( $tax_category ) ) {
 				// phpcs:ignore
-				$this->query_args['tax_query'] = array(
+				$q_filter['tax_query'] = array(
 					array(
-						'taxonomy' => 'portfolio_category',
+						'taxonomy' => 'catalog_category',
 						'field'    => 'slug',
-						'terms'    => $settings['portfolio_widget_filter'],
+						'terms'    => '' === $tax_category ? 'default' : $tax_category,
 					),
 				);
 			}
 
-			get_template_part(
-				'loop',
-				'portfolio',
+			$catalog_filter = $settings['portfolio_widget_filter'];
+			if ( ! empty( $catalog_filter ) ) {
+				//phpcs:ignore
+				$q_filter['meta_query'] = array(
+					array(
+						'key'   => 'efod_portfolio_one2many_catalog',
+						'value' => $catalog_filter,
+					),
+				);
+			}
+			$q = new WP_Query( $q_filter );
+
+			$data = array_merge(
+				$settings,
 				array(
-					'query_filter' => $this->query_args,
-					'settings'     => $settings,
+					'q'                      => $q && $q->have_posts() ? $q : null,
+					'responsive_layout_type' => $determined_layout_type,
 				)
+			);
+
+			efod_get_views(
+				'widgets/loop-portfolio',
+				$data
 			);
 		}
 	}
