@@ -4,6 +4,13 @@
 @import "../node_modules/bootstrap/scss/bootstrap-grid.scss";
 @import "../node_modules/bootstrap/scss/bootstrap-utilities.scss";
 
+// Load Fontawesome
+$fa-font-path: "../../assets/webfonts";
+@import "../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+@import "../node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
+@import "../node_modules/@fortawesome/fontawesome-free/scss/regular.scss";
+
 /**
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
