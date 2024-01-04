@@ -55,8 +55,9 @@ class Efod_Framework {
 	 */
 	public function __construct() {
 		add_action( 'plugins_loaded', array( $this, 'init' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'init_scripts' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'init_public_assets' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_assets' ) );
+		add_action( 'elementor/editor/after_enqueue_styles', array( $this, 'enqueue_elementor_assets' ) );
 	}
 
 	/**
@@ -81,39 +82,24 @@ class Efod_Framework {
 	/**
 	 * Initialize required scripts
 	 */
-	public function init_scripts() {
-		wp_register_script(
-			'efod-framework-admin-js',
-			plugin_dir_url( __FILE__ ) . '../public/js/admin.js',
-			array(),
-			EFOD_FRAMEWORK_VERSION,
-			true
-		);
-		wp_enqueue_script( 'efod-framework-admin-js' );
-		wp_register_style(
-			'efod-framework-styles',
-			plugin_dir_url( __FILE__ ) . '../public/css/admin.css',
-			array(),
-			EFOD_FRAMEWORK_VERSION,
-			true
-		);
-		wp_enqueue_style( 'efod-framework-styles' );
-		
+	public function enqueue_admin_assets() {
+		wp_enqueue_script( 'efod-admin-js', plugin_dir_url( __FILE__ ) . '../public/js/admin.js', false, EFOD_FRAMEWORK_VERSION, true );
+		wp_enqueue_style( 'efod-admin-styles', plugin_dir_url( __FILE__ ) . '../public/css/admin.css', false, EFOD_FRAMEWORK_VERSION );
 	}
 
 	/**
 	 * Initialize public styles & scripts
 	 */
-	public function init_public_assets() {
-		wp_register_script(
-			'efod-js',
-			plugin_dir_url( __FILE__ ) . '../public/js/public.js',
-			array(),
-			EFOD_FRAMEWORK_VERSION,
-			true
-		);
-		wp_enqueue_script( 'efod-js' );
-		wp_enqueue_style( 'efod-styles', plugin_dir_url( __FILE__ ) . '../public/css/public.css', array(), EFOD_FRAMEWORK_VERSION );
+	public function enqueue_public_assets() {
+		wp_enqueue_script( 'efod-js', plugin_dir_url( __FILE__ ) . '../public/js/public.js', false, EFOD_FRAMEWORK_VERSION, true );
+		wp_enqueue_style( 'efod-styles', plugin_dir_url( __FILE__ ) . '../public/css/public.css', false, EFOD_FRAMEWORK_VERSION );
+	}
+
+	/**
+	 * Initialize required scripts
+	 */
+	public function enqueue_elementor_assets() {
+		wp_enqueue_style( 'efod-admin-styles', plugin_dir_url( __FILE__ ) . '../public/css/admin.css', false, EFOD_FRAMEWORK_VERSION );
 	}
 }
 
