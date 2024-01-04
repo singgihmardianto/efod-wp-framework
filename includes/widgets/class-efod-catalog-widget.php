@@ -23,7 +23,7 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 
 		/**
 		 * Array of layout options
-		 * 
+		 *
 		 * @var array layout_options;
 		 */
 		protected $layout_options;
@@ -272,18 +272,19 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 			// get widget settings.
 			$settings = $this->get_settings_for_display();
 
-			$determined_layout_type = __efod_determine_responsive_class( array_keys( $this->layout_options ),
+			$determined_layout_type = efod_determine_responsive_class(
+				array_keys( $this->layout_options ),
 				$settings['layout_type'],
-				isset($settings['layout_type_tablet']) ? $settings['layout_type_tablet'] : 'grid-3',
-				isset($settings['layout_type_mobile']) ? $settings['layout_type_mobile'] : 'grid-3'
+				isset( $settings['layout_type_tablet'] ) ? $settings['layout_type_tablet'] : 'grid-3',
+				isset( $settings['layout_type_mobile'] ) ? $settings['layout_type_mobile'] : 'grid-3'
 			);
 
 			$q = null;
 
-			if ( $determined_layout_type['grid-3'] || 
-				 $determined_layout_type['grid-4'] || 
-				 $determined_layout_type['masonry-3'] || 
-				 $determined_layout_type['masonry-4'] ) {
+			if ( $determined_layout_type['grid-3'] ||
+				$determined_layout_type['grid-4'] ||
+				$determined_layout_type['masonry-3'] ||
+				$determined_layout_type['masonry-4'] ) {
 				// if used in any screen.
 				$tax_category = $settings['catalog_widget_filter'];
 				$q_filter     = array(
