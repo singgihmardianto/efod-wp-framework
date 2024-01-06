@@ -39,7 +39,7 @@ if ( ! class_exists( 'Efod_Portfolio_Featured_Widget' ) ) {
 
 			// Load filter portfolio.
 			// Lets assume catalog under a hundred, so it's safe to set the `numberposts` = -1.
-			$_portfolio             = get_posts(
+			$_portfolio                  = get_posts(
 				array(
 					'post_type'   => 'portfolio',
 					'numberposts' => -1,
@@ -140,31 +140,31 @@ if ( ! class_exists( 'Efod_Portfolio_Featured_Widget' ) ) {
 
 			$this->add_responsive_control(
 				'featured_thumbnail',
-				[
-					'label' => esc_html__( 'Override Featured Thumbnail', 'efod-framework' ),
-					'type' => \Elementor\Controls_Manager::MEDIA,
-					'default_desktop' => [
+				array(
+					'label'           => esc_html__( 'Override Featured Thumbnail', 'efod-framework' ),
+					'type'            => \Elementor\Controls_Manager::MEDIA,
+					'default_desktop' => array(
 						'url' => \Elementor\Utils::get_placeholder_image_src(),
-					],
-					'default_tablet' => [
+					),
+					'default_tablet'  => array(
 						'url' => \Elementor\Utils::get_placeholder_image_src(),
-					],
-					'default_mobile' => [
+					),
+					'default_mobile'  => array(
 						'url' => \Elementor\Utils::get_placeholder_image_src(),
-					],
-				]
+					),
+				)
 			);
 
 			$this->add_control(
 				'enable_cta',
-				[
-					'label' => esc_html__( 'Enable CTA?', 'efod_framework' ),
-					'type' => \Elementor\Controls_Manager::SWITCHER,
-					'label_on' => esc_html__( 'Enabled', 'textdomain' ),
-					'label_off' => esc_html__( 'Disabled', 'textdomain' ),
+				array(
+					'label'        => esc_html__( 'Enable CTA?', 'efod-framework' ),
+					'type'         => \Elementor\Controls_Manager::SWITCHER,
+					'label_on'     => esc_html__( 'Enabled', 'efod-framework' ),
+					'label_off'    => esc_html__( 'Disabled', 'efod-framework' ),
 					'return_value' => 'yes',
-					'default' => 'yes',
-				]
+					'default'      => 'yes',
+				)
 			);
 
 			$this->add_control(
@@ -186,14 +186,12 @@ if ( ! class_exists( 'Efod_Portfolio_Featured_Widget' ) ) {
 			// get settings.
 			$settings = $this->get_settings_for_display();
 
-			if ( '' !== $settings['the_portfolio']) {
+			if ( '' !== $settings['the_portfolio'] ) {
 				$settings['the_portfolio'] = get_post( $settings['the_portfolio'] );
 			}
 			$data = array_merge(
 				$settings
 			);
-
-			// print_r($data); die;
 
 			efod_get_views(
 				'widgets/single-portfolio',
