@@ -25,8 +25,7 @@ if ( ! class_exists( 'Efod_Elementor' ) ) {
 			$this->widget_classes = array(
 				'class-efod-catalog-widget.php',
 				'class-efod-portfolio-widget.php',
-				'class-efod-testimonial-widget.php',
-				'class-efod-icon-list-widget.php',
+				'class-efod-portfolio-featured-widget.php',
 			);
 
 			$this->init();
@@ -60,10 +59,9 @@ if ( ! class_exists( 'Efod_Elementor' ) ) {
 			}
 
 			// Register widget.
-			$widgets_manager->register( new \Efod_Portfolio_Widget() );
 			$widgets_manager->register( new \Efod_Catalog_Widget() );
-			$widgets_manager->register( new \Efod_Testimonial_Widget() );
-			$widgets_manager->register( new \Efod_Icon_List_Widget() );
+			$widgets_manager->register( new \Efod_Portfolio_Widget() );
+			$widgets_manager->register( new \Efod_Portfolio_Featured_Widget() );
 		}
 
 		/**
