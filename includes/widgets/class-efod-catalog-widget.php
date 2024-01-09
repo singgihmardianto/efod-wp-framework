@@ -279,31 +279,37 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 				isset( $settings['layout_type_mobile'] ) ? $settings['layout_type_mobile'] : 'grid-3'
 			);
 
-			$q = null;
-
+			$q        = null;
+			$q_filter = null;
 			if ( $determined_layout_type['grid-3'] ||
 				$determined_layout_type['grid-4'] ||
 				$determined_layout_type['masonry-3'] ||
 				$determined_layout_type['masonry-4'] ) {
-				// if used in any screen.
-				$tax_category = $settings['catalog_widget_filter'];
-				$q_filter     = array(
+				$q_filter = array(
 					'post_type'      => 'catalog',
 					'post_status'    => 'publish',
 					'posts_per_page' => $settings['data_counts'],
 					'orderby'        => 'id',
 					'order'          => 'DESC',
 					'paged'          => ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1,
-					// phpcs:ignore
-					'tax_query'      => array(
-						array(
-							'taxonomy' => 'catalog_category',
-							'field'    => 'slug',
-							'terms'    => '' === $tax_category ? 'default' : $tax_category,
-						),
+				);
+			}
+
+			if ( null !== $q_filter && 'default' !== $settings['catalog_widget_filter'] ) {
+				// if used in any screen.
+				$tax_category = $settings['catalog_widget_filter'];
+				// phpcs:ignore
+				$q_filter['tax_query'] = array(
+					array(
+						'taxonomy' => 'catalog_category',
+						'field'    => 'slug',
+						'terms'    => array( $tax_category ),
 					),
 				);
-				$q            = new WP_Query( $q_filter );
+			}
+
+			if ( null !== $q_filter ) {
+				$q = new WP_Query( $q_filter );
 			}
 
 			$terms = null;
@@ -333,10 +339,10 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 							),
 						),
 					);
-					$q        = new WP_Query( $q_filter );
+					$q_term   = new WP_Query( $q_filter );
 					$terms[]  = array(
 						'term' => $term,
-						'q'    => $q,
+						'q'    => $q_term,
 					);
 				}
 			}

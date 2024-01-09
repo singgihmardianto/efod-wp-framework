@@ -57,13 +57,13 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 
 			// Load filter portfolio by a catalog (post).
 			// Lets assume catalog under a hundred, so it's safe to set the `numberposts` = -1.
-			$_catalogs             = get_posts(
+			$_catalogs                    = get_posts(
 				array(
 					'post_type'   => 'catalog',
 					'numberposts' => -1,
 				)
 			);
-			$this->cat_options[''] = __( 'Choose Catalog', 'efod-framework' );
+			$this->cat_options['default'] = __( 'Choose Catalog', 'efod-framework' );
 			foreach ( $_catalogs as $catalog ) {
 				$this->cat_options[ $catalog->ID ] = esc_html( $catalog->post_title );
 			}
@@ -277,20 +277,8 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 				'paged'          => ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1,
 			);
 
-			$tax_category = $settings['portfolio_widget_filter'];
-			if ( ! empty( $tax_category ) ) {
-				// phpcs:ignore
-				$q_filter['tax_query'] = array(
-					array(
-						'taxonomy' => 'catalog_category',
-						'field'    => 'slug',
-						'terms'    => '' === $tax_category ? 'default' : $tax_category,
-					),
-				);
-			}
-
 			$catalog_filter = $settings['portfolio_widget_filter'];
-			if ( ! empty( $catalog_filter ) ) {
+			if ( 'default' !== $catalog_filter ) {
 				//phpcs:ignore
 				$q_filter['meta_query'] = array(
 					array(

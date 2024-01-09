@@ -5,22 +5,6 @@
  * @package efod-framework
  */
 
-/**
- * $args is arguments from elementor. We use this template for widgets and archive page
- * so we need to declare default value and override with elementor $args if exists.
- */
-
-if ( empty( $args ) ) {
-	$args = array(
-		'title'           => '',
-		'description'     => '',
-		'data_counts'     => get_option( 'posts_per_page' ),
-		'pagination_type' => 'slider',
-		'layout_type'     => 'grid-4',
-		'q'               => null,
-	);
-}
-
 // Grouped some types into another array.
 $is_list_layout    = array_intersect_key( $responsive_layout_type, array_flip( array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' ) ) );
 $joined_list_value = join( ' ', $is_list_layout );
