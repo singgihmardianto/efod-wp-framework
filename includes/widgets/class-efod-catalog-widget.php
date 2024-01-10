@@ -36,13 +36,6 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 		protected $widget_options;
 
 		/**
-		 * Array of query arguments
-		 *
-		 * @var query_args
-		 */
-		protected $query_args;
-
-		/**
 		 * Construct efod testimonial widget
 		 *
 		 * @param array $data default parameter elementor widget.
@@ -77,17 +70,6 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 				'masonry-4' => __( 'Masonry 4 column', 'efod-framework' ),
 				'tab'       => __( 'Tab', 'efod-framework' ),
 				'accordion' => __( 'Accordion', 'efod-framework' ),
-			);
-
-			/**
-			 * Construct catalog query args
-			 */
-			$this->query_args = array(
-				'post_type'     => 'catalog',
-				'post_status'   => 'publish',
-				'post_per_page' => -1,
-				'orderby'       => 'id',
-				'order'         => 'DESC',
 			);
 		}
 
@@ -307,10 +289,7 @@ if ( ! class_exists( 'Efod_Catalog_Widget' ) ) {
 					),
 				);
 			}
-
-			if ( null !== $q_filter ) {
-				$q = new WP_Query( $q_filter );
-			}
+			$q = new WP_Query( $q_filter );
 
 			$terms = null;
 			if ( $determined_layout_type['tab'] || $determined_layout_type['accordion'] ) {

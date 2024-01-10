@@ -29,13 +29,6 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 		protected $layout_options;
 
 		/**
-		 * The query args
-		 *
-		 * @var query_args
-		 */
-		protected $query_args;
-
-		/**
 		 * Construct efod testimonial widget
 		 *
 		 * @param array $data default parameter elementor widget.
