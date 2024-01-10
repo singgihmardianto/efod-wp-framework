@@ -219,7 +219,7 @@ if ( ! function_exists( 'efod_determine_responsive_class' ) ) {
 	function efod_determine_responsive_class( array $layout_options, ...$medias ) {
 		$results = array();
 		foreach ( $layout_options as $opt ) {
-			$results[ $opt ] = '';
+			$results[ $opt ] = array();
 		}
 
 		$temp           = null;
@@ -247,17 +247,30 @@ if ( ! function_exists( 'efod_determine_responsive_class' ) ) {
 			} elseif ( null !== $temp && $temp === $media ) {
 				$str_responsive[] = $_i;
 			} elseif ( null !== $temp && $temp !== $media ) {
-				$str_responsive[] = 'd-none';
-				$results[ $temp ] = join( ' ', $str_responsive );
+				if ( count( $results[ $temp ] ) > 0 ) {
+					$str_responsive = array_merge( $str_responsive, $results[ $temp ] );
+				}
+				$results[ $temp ] = $str_responsive;
 				$temp             = $media;
 				$str_responsive   = array();
 				$str_responsive[] = $_i;
 			}
 		}
 		if ( count( $str_responsive ) > 0 && null !== $temp ) {
-			$str_responsive[] = 'd-none';
-			$results[ $temp ] = join( ' ', $str_responsive );
+			if ( count( $results[ $temp ] ) > 0 ) {
+				$str_responsive = array_merge( $str_responsive, $results[ $temp ] );
+			}
+			$results[ $temp ] = $str_responsive;
 		}
-		return $results;
+
+		// Flatten results from array to string.
+		$flattened_results = array();
+		foreach ( $results as $i => $media ) {
+			if ( count( $media ) > 0 ) {
+				$media[] = 'd-none';
+			}
+			$flattened_results[ $i ] = join( ' ', $media );
+		}
+		return $flattened_results;
 	}
 }

@@ -18,7 +18,7 @@ if ( $q && $q->have_posts() ) { ?>
 	<?php endif; ?>
 	<?php if ( $responsive_layout_type && ! empty( $joined_list_value ) ) : ?>
 		<div class="ef-loop ef-paginate_<?php echo esc_html( $pagination_type ); ?> <?php echo esc_html( $joined_list_value ); ?>">
-			<div class="ef-loop-container ef-catalog">
+			<div class="ef-loop-container ef-catalog <?php echo esc_html( $layout_type ); ?>">
 				<?php
 				while ( $q->have_posts() ) :
 					$q->the_post();

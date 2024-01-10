@@ -233,7 +233,7 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 					'label'           => __( 'Layout Type', 'efod-framework' ),
 					'type'            => \Elementor\Controls_Manager::SELECT,
 					'options'         => $this->layout_options,
-					'desktop_default' => 'grid-3',
+					'default'         => 'grid-3',
 					'tablet_default'  => 'grid-3',
 					'mobile_default'  => 'grid-3',
 				)
