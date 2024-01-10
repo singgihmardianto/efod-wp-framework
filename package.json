@@ -10,7 +10,8 @@
 		"release:minor": "standard-version --release-as minor",
 		"release:patch": "standard-version --release-as patch",
 		"deploy": "commands/deploy.sh",
-		"commit": "cz"
+		"commit": "cz",
+		"bundle": "dir-archiver --src . --dest ./dist/efod-framework.zip --exclude .DS_Store .stylelintrc.json .eslintrc .prettierrc .git .gitattributes .github .gitignore README.md composer.json composer.lock node_modules vendor package-lock.json package.json .travis.yml phpcs.xml.dist styles scripts commands yarn.lock"
 	},
 	"keywords": [
 		"\"Wordpress\"",
@@ -23,6 +24,7 @@
 		"@wordpress/scripts": "^25.2.0",
 		"commitizen": "^4.2.4",
 		"cz-conventional-changelog": "^3.3.0",
+		"dir-archiver": "^2.1.0",
 		"node-sass": "^7.0.3",
 		"standard-version": "^9.3.2"
 	},
