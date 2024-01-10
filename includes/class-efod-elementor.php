@@ -26,6 +26,7 @@ if ( ! class_exists( 'Efod_Elementor' ) ) {
 				'class-efod-catalog-widget.php',
 				'class-efod-portfolio-widget.php',
 				'class-efod-portfolio-featured-widget.php',
+				'class-efod-career-widget.php',
 			);
 
 			$this->init();
@@ -62,6 +63,7 @@ if ( ! class_exists( 'Efod_Elementor' ) ) {
 			$widgets_manager->register( new \Efod_Catalog_Widget() );
 			$widgets_manager->register( new \Efod_Portfolio_Widget() );
 			$widgets_manager->register( new \Efod_Portfolio_Featured_Widget() );
+			$widgets_manager->register( new \Efod_Career_Widget() );
 		}
 
 		/**
