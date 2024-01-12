@@ -30,7 +30,7 @@ if ( $q && $q->have_posts() ) : ?>
 					<div class="ef-widget__portfolio">
 						<div class="ef-widget__wrapper">
 							<div class="ef-post-thumbnail">
-								<?php efod_the_thumbnail([ 'custom_link_field' => 'efod_portfolio_project_link']); ?>
+								<?php efod_the_thumbnail( array( 'custom_link_field' => 'efod_portfolio_project_link' ) ); ?>
 							</div> <!-- .ef-post-thumbnail -->
 							<div class="ef-post-body">
 								<h3 class="ef-title"> 

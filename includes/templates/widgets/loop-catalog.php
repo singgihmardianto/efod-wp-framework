@@ -27,7 +27,7 @@ if ( $q && $q->have_posts() ) { ?>
 					<div class="ef-widget__catalog">
 						<div class="ef-widget__wrapper">
 							<div class="ef-post-thumbnail">
-								<?php efod_the_thumbnail([ 'custom_link_field' => 'efod_catalog_cta_url'] ); ?>
+								<?php efod_the_thumbnail( array( 'custom_link_field' => 'efod_catalog_cta_url' ) ); ?>
 							</div>
 							<div class="ef-post-body">
 								<h3 class="ef-title"> 
