@@ -134,6 +134,33 @@ if ( ! class_exists( 'Efod_Career_Widget' ) ) {
 			);
 
 			$this->add_control(
+				'cta_title',
+				array(
+					'label'       => __( 'CTA Title', 'efod-framework' ),
+					'type'        => \Elementor\Controls_Manager::TEXT,
+					'default'     => 'Apply Now',
+					'placeholder' => 'Apply Now',
+					'label_block' => true,
+				)
+			);
+
+			$this->add_control(
+				'cta_url',
+				array(
+					'label'       => '',
+					'show_label'  => false,
+					'type'        => \Elementor\Controls_Manager::URL,
+					'options'     => array( 'url', 'is_external', 'nofollow' ),
+					'default'     => array(
+						'url'         => 'mailto:forti.dev@gmail.com',
+						'is_external' => true,
+						'nofollow'    => true,
+					),
+					'label_block' => true,
+				)
+			);
+
+			$this->add_control(
 				'data_counts',
 				array(
 					'label'      => __( 'Vacancies To Show', 'efod-framework' ),

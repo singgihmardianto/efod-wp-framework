@@ -8,14 +8,7 @@
 // Grouped some types into another array.
 $is_list_layout    = array_intersect_key( $responsive_layout_type, array_flip( array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' ) ) );
 $joined_list_value = join( ' ', $is_list_layout );
-
 if ( $q && $q->have_posts() ) { ?>
-	<?php if ( ! empty( $title ) ) : ?>
-		<h2 class="ef-title"><?php echo esc_html( $title ); ?></h2>
-	<?php endif; ?>
-	<?php if ( ! empty( $description ) ) : ?>
-		<p class="ef-description"><?php echo esc_html( $description ); ?></p>
-	<?php endif; ?>
 	<?php if ( $responsive_layout_type && ! empty( $joined_list_value ) ) : ?>
 		<div class="ef-loop ef-paginate_<?php echo esc_html( $pagination_type ); ?> <?php echo esc_html( $joined_list_value ); ?>">
 			<div class="ef-loop-container ef-catalog <?php echo esc_html( $layout_type ); ?>">
@@ -33,8 +26,8 @@ if ( $q && $q->have_posts() ) { ?>
 								<h3 class="ef-title"> 
 									<?php the_title(); ?> <?php efod_posted_on(); ?>
 								</h3>
-								<div class="ef-description"> 
-									<?php the_excerpt(); ?> 
+								<div class="ef-description">  
+									<?php the_content(); ?> 
 								</div>
 								<div class="ef-post-meta">
 									<?php efod_custom_posts_meta( 'catalog' ); ?>
@@ -75,14 +68,34 @@ if ( $q && $q->have_posts() ) { ?>
 					$q        = $tax_term['q'];
 					?>
 					<div class="tab-pane fade <?php echo esc_html( 0 === $i ? 'show active' : 'fade' ); ?>" id="<?php echo esc_html( $cur_term->slug ); ?>-tab-pane" role="tabpanel">
-						<ul>
+						<ul >
 							<?php
 							while ( $q->have_posts() ) :
 								$q->the_post();
 								?>
 								<li>
-									<span class=""><?php echo esc_html( the_title() ); ?></span>
-									<a href="<?php echo esc_html( the_permalink() ); ?>"><i class="fa-solid fa-chevron-right"></i></a>
+									<div class="ef-widget__catalog">
+										<div class="ef-widget__wrapper">
+											<div class="ef-post-thumbnail">
+												<?php efod_the_thumbnail(); ?>
+											</div>
+											<div class="ef-post-body">
+												<h3 class="ef-title"> 
+													<?php the_title(); ?>
+												</h3>
+												<div class="ef-description"> 
+													<?php the_content(); ?> 
+												</div>
+												<?php if ( '' !== $cta_url['url'] ) : ?>
+													<div class="ef-post-meta">
+														<a href="<?php echo esc_url( $cta_url['url'] ); ?>" target="<?php echo esc_html( true === $cta_url['is_external'] ? '_blank' : '' ); ?>">
+															<?php echo esc_html( '' !== $cta_title ? $cta_title : __( 'Apply Now', 'efod-framework' ) ); ?>
+														</a>
+													</div>
+												<?php endif; ?>
+											</div>
+										</div>
+									</div> <!-- .ef-widget__catalog -->
 								</li>
 							<?php endwhile; ?>
 						</ul>
@@ -113,8 +126,28 @@ if ( $q && $q->have_posts() ) { ?>
 										$q->the_post();
 										?>
 										<li>
-											<span class=""><?php echo esc_html( the_title() ); ?></span>
-											<a href="<?php echo esc_html( the_permalink() ); ?>"><i class="fa-solid fa-chevron-right"></i></a>
+											<div class="ef-widget__catalog">
+												<div class="ef-widget__wrapper">
+													<div class="ef-post-thumbnail">
+														<?php efod_the_thumbnail(); ?>
+													</div>
+													<div class="ef-post-body">
+														<h3 class="ef-title"> 
+															<?php the_title(); ?>
+														</h3>
+														<div class="ef-description">  
+															<?php the_content(); ?> 
+														</div>
+														<?php if ( '' !== $cta_url['url'] ) : ?>
+															<div class="ef-post-meta">
+																<a href="<?php echo esc_url( $cta_url['url'] ); ?>" target="<?php echo esc_html( true === $cta_url['is_external'] ? '_blank' : '' ); ?>">
+																	<?php echo esc_html( '' !== $cta_title ? $cta_title : __( 'Apply Now', 'efod-framework' ) ); ?>
+																</a>
+															</div>
+														<?php endif; ?>
+													</div>
+												</div>
+											</div> <!-- .ef-widget__catalog -->
 										</li>
 									<?php endwhile; ?>
 								</ul>
