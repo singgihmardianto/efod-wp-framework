@@ -34,16 +34,24 @@ if ( ! function_exists( 'efod_the_thumbnail' ) ) {
 	 *
 	 * Wraps the post thumbnail in an anchor element on index views, or a div
 	 * element when on single views.
+	 * 
+	 * @param mixed $options
+	 * 	string $options['custom_link_field'] permalink meta key field
 	 */
-	function efod_the_thumbnail() {
+	function efod_the_thumbnail(mixed $options = []) {
 		if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
 			return;
 		}
 
-		if ( ! is_singular() ) :
+		if ( ! is_singular( ['catalog', 'portfolio', 'job_vacancies' ] ) ) :
+			$_id = get_post()->ID;
+			$permalink = get_post_permalink( $_id );
+			if ( '' !== $options['custom_link_field'] && '' !== get_post_meta( $_id, $options['custom_link_field'], true ) ) {
+				$permalink = get_post_meta( $_id, $options['custom_link_field'], true );
+			}
 			?>
 
-			<a class="post-thumbnail" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
+			<a class="post-thumbnail" target="_blank" href="<?php echo esc_html($permalink); ?>" aria-hidden="true" tabindex="-1">
 				<?php
 					the_post_thumbnail(
 						'post-thumbnail',
