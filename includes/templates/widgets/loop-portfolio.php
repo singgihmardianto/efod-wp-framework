@@ -77,4 +77,5 @@ $joined_icon_value = join( ' ', $is_icon_layout ); ?>
 	</div>
 <?php endif; ?>
 
-<?php wp_reset_postdata();
+<?php
+wp_reset_postdata();

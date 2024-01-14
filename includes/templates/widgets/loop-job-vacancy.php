@@ -161,4 +161,5 @@ $joined_list_value = join( ' ', $is_list_layout ); ?>
 	</div> <!-- .ef-loop.ef-accordion -->
 <?php endif; ?>
 
-<?php wp_reset_postdata();
+<?php
+wp_reset_postdata();

@@ -73,7 +73,7 @@ $joined_list_value = join( ' ', $is_list_layout ); ?>
 			<?php
 			foreach ( $terms as $i => $tax_term ) :
 				$cur_term = $tax_term['term'];
-				$q_tab        = $tax_term['q'];
+				$q_tab    = $tax_term['q'];
 				?>
 				<div class="tab-pane fade <?php echo esc_html( 0 === $i ? 'show active' : 'fade' ); ?>" id="<?php echo esc_html( $cur_term->slug ); ?>-tab-pane" role="tabpanel">
 					<ul>
@@ -99,7 +99,7 @@ $joined_list_value = join( ' ', $is_list_layout ); ?>
 			<?php
 			foreach ( $terms as $i => $tax_term ) :
 				$cur_term = $tax_term['term'];
-				$q_acc        = $tax_term['q'];
+				$q_acc    = $tax_term['q'];
 				?>
 				<div class="accordion-item">
 					<h2 class="accordion-header">
@@ -127,6 +127,8 @@ $joined_list_value = join( ' ', $is_list_layout ); ?>
 		</div>  <!-- .accordion.accordion-flush -->
 	</div> <!-- .ef-loop.ef-accordion -->
 	<?php
-endif; ?>
+endif;
+?>
 
-<?php wp_reset_postdata();
+<?php
+wp_reset_postdata();
