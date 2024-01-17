@@ -37,17 +37,6 @@ if ( ! class_exists( 'Efod_Portfolio_Widget' ) ) {
 		public function __construct( $data = array(), $args = null ) {
 			parent::__construct( $data, $args );
 
-			/**
-			 * Construct portfolio query args
-			 */
-			$this->query_args = array(
-				'post_type'     => 'portfolio',
-				'post_status'   => 'publish',
-				'post_per_page' => -1,
-				'orderby'       => 'id',
-				'order'         => 'DESC',
-			);
-
 			// Load filter portfolio by a catalog (post).
 			// Lets assume catalog under a hundred, so it's safe to set the `numberposts` = -1.
 			$_catalogs                    = get_posts(

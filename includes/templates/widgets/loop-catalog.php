@@ -7,7 +7,7 @@
 
 // Grouped some types into another array.
 $is_list_layout    = array_intersect_key( $responsive_layout_type, array_flip( array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' ) ) );
-$joined_list_value = join( ' ', $is_list_layout ); ?>
+$joined_list_value = trim( join( ' ', $is_list_layout ) ); ?>
 
 <?php if ( ! empty( $title ) ) : ?>
 	<h2 class="ef-title"><?php echo esc_html( $title ); ?></h2>

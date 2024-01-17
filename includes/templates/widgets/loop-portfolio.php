@@ -7,10 +7,7 @@
 
 // Grouped some types into another array.
 $is_list_layout    = array_intersect_key( $responsive_layout_type, array_flip( array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' ) ) );
-$joined_list_value = join( ' ', $is_list_layout );
-
-$is_icon_layout    = array_intersect_key( $responsive_layout_type, array_flip( array( 'single-icon', 'multi-icon' ) ) );
-$joined_icon_value = join( ' ', $is_icon_layout ); ?>
+$joined_list_value = trim( join( ' ', $is_list_layout ) ); ?>
 
 <?php if ( ! empty( $title ) ) : ?>
 	<h2 class="ef-title"><?php echo esc_html( $title ); ?></h2>
@@ -60,8 +57,8 @@ $joined_icon_value = join( ' ', $is_icon_layout ); ?>
 	</div>
 <?php endif; ?>
 
-<?php if ( $q && $responsive_layout_type && ! empty( $joined_icon_value ) ) : ?>
-	<div class="ef-loop ef-portfolio-icon <?php echo esc_html( $joined_icon_value ); ?>">
+<?php if ( $q && $responsive_layout_type && ! empty( $responsive_layout_type['single-icon'] ) ) : ?>
+	<div class="ef-loop ef-portfolio-icon <?php echo esc_html( $responsive_layout_type['single-icon'] ); ?>">
 		<ul>
 			<?php
 			while ( $q->have_posts() ) :

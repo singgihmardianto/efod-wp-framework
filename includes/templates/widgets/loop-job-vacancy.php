@@ -7,7 +7,7 @@
 
 // Grouped some types into another array.
 $is_list_layout    = array_intersect_key( $responsive_layout_type, array_flip( array( 'grid-3', 'grid-4', 'masonry-3', 'masonry-4' ) ) );
-$joined_list_value = join( ' ', $is_list_layout ); ?>
+$joined_list_value = trim( join( ' ', $is_list_layout ) ); ?>
 
 <?php if ( $q && $responsive_layout_type && ! empty( $joined_list_value ) ) : ?>
 	<div class="ef-loop ef-paginate_<?php echo esc_html( $pagination_type ); ?> <?php echo esc_html( $joined_list_value ); ?>">
