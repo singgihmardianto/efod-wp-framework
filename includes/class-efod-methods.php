@@ -71,6 +71,39 @@ if ( ! function_exists( 'efod_the_thumbnail' ) ) {
 	}
 }
 
+if ( ! function_exists( 'efod_the_title' ) ) {
+	/**
+	 * Displays an optional post title.
+	 *
+	 * Wraps the post title in an anchor element on index views, or a div
+	 * element when on single views.
+	 *
+	 * @param mixed $options mixed options render custom post thumbnail.
+	 *  string $options['custom_link_field'] permalink meta key field.
+	 */
+	function efod_the_title( mixed $options = array() ) {
+		if ( ! is_singular( array( 'catalog', 'portfolio', 'job_vacancies' ) ) ) :
+			$_id       = get_post()->ID;
+			$permalink = '';
+			if ( '' !== $options['custom_link_field'] && '' !== get_post_meta( $_id, $options['custom_link_field'], true ) ) {
+				$permalink = get_post_meta( $_id, $options['custom_link_field'], true );
+			}
+
+			if ( ! empty( $permalink ) ) :
+				?>
+				<a class="post-title" target="_blank" href="<?php echo esc_html( $permalink ); ?>" aria-hidden="true" tabindex="-1">
+					<?php
+						the_title();
+					?>
+				</a>
+			<?php else : ?>
+				<?php the_title(); ?>
+				<?php
+			endif;
+		endif; // End is_singular().
+	}
+}
+
 if ( ! function_exists( 'efod_posted_on' ) ) {
 	/**
 	 * Prints HTML with meta information for the current post-date/time.

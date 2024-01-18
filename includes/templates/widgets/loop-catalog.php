@@ -31,7 +31,7 @@ $joined_list_value = trim( join( ' ', $is_list_layout ) ); ?>
 						</div>
 						<div class="ef-post-body">
 							<h3 class="ef-title"> 
-								<?php the_title(); ?> <?php efod_posted_on(); ?>
+								<?php efod_the_title( array( 'custom_link_field' => 'efod_catalog_cta_url' ) ); ?> <?php efod_posted_on(); ?>
 							</h3>
 							<div class="ef-description"> 
 								<?php the_excerpt(); ?> 
